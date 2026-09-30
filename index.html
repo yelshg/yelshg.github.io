@@ -996,6 +996,8 @@
       transform: translateY(-2px);
     }
 
+    .menu-toggle { display: none; }
+
     .site-nav {
       display: flex;
       align-items: center;
@@ -1861,8 +1863,88 @@
         padding: 0 25px;
       }
 
-      .site-nav { gap: 14px; }
-      .site-nav a:not(.header-cta):not([href="#contact"]) { display: none; }
+      /* Mobile: hamburger + slide-in menu */
+      .site-header { backdrop-filter: none; }
+
+      .menu-toggle {
+        position: relative;
+        z-index: 120;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 7px;
+        width: 40px;
+        height: 40px;
+        padding: 0 4px;
+        border: 0;
+        background: transparent;
+        cursor: pointer;
+      }
+
+      .menu-toggle span {
+        display: block;
+        height: 2px;
+        border-radius: 2px;
+        background: var(--green);
+        transition: transform 250ms ease, opacity 200ms ease, width 250ms ease;
+      }
+
+      .menu-toggle span:nth-child(1) { width: 100%; }
+      .menu-toggle span:nth-child(2) { width: 80%; margin-left: auto; }
+      .menu-toggle span:nth-child(3) { width: 60%; margin-left: auto; }
+
+      body.menu-open .menu-toggle span:nth-child(1) { transform: translateY(9px) rotate(45deg); }
+      body.menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
+      body.menu-open .menu-toggle span:nth-child(3) { width: 100%; transform: translateY(-9px) rotate(-45deg); }
+
+      .site-nav {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 110;
+        width: min(75vw, 400px);
+        flex-direction: column;
+        justify-content: center;
+        gap: 34px;
+        padding: 50px 10px;
+        background: var(--light-navy);
+        box-shadow: -10px 0 30px -15px var(--navy-shadow);
+        font-size: 15px;
+        transform: translateX(100%);
+        visibility: hidden;
+        transition: transform 300ms cubic-bezier(0.645, 0.045, 0.355, 1), visibility 300ms;
+      }
+
+      body.menu-open .site-nav {
+        transform: none;
+        visibility: visible;
+      }
+
+      .site-nav a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+      }
+
+      .site-nav a span { font-size: 13px; }
+
+      .site-nav .header-cta {
+        margin: 10px 0 0;
+        padding: 14px 40px;
+      }
+
+      body.menu-open { overflow: hidden; }
+
+      body.menu-open main,
+      body.menu-open .social-rail,
+      body.menu-open .email-rail {
+        filter: blur(5px) brightness(0.7);
+        pointer-events: none;
+        user-select: none;
+      }
 
       .page { width: min(calc(100% - 48px), var(--max)); }
 
@@ -1945,8 +2027,6 @@
         height: 47px;
       }
 
-      .site-nav a[href="#contact"] { display: none; }
-      .site-nav .header-cta { padding: 8px 12px; }
 
       .page { width: min(calc(100% - 40px), var(--max)); }
 
@@ -2322,7 +2402,10 @@
 
   <header class="site-header">
     <a class="brand" href="#main" aria-label="Yelshaday Gebreselassie home">YG</a>
-    <nav class="site-nav" aria-label="Main navigation">
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </button>
+    <nav class="site-nav" id="site-nav" aria-label="Main navigation">
       <a href="#main"><span>01.</span> About</a>
       <a href="#experience"><span>02.</span> Experience</a>
       <a href="#education"><span>03.</span> Education</a>
@@ -2612,6 +2695,23 @@
       });
       syncReader();
 
+
+      const menuToggle = document.querySelector('.menu-toggle');
+      const siteNav = document.getElementById('site-nav');
+      const setMenu = (open) => {
+        document.body.classList.toggle('menu-open', open);
+        menuToggle?.setAttribute('aria-expanded', String(open));
+        menuToggle?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+      };
+      menuToggle?.addEventListener('click', () => setMenu(!document.body.classList.contains('menu-open')));
+      siteNav?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && document.body.classList.contains('menu-open')) {
+          setMenu(false);
+          menuToggle?.focus();
+        }
+      });
+      window.matchMedia('(min-width: 821px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
       function startSectionReveal() {
       if (reduceMotion || !('IntersectionObserver' in window)) {
