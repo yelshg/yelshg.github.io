@@ -578,7 +578,6 @@
     }
 
     .section-title span { opacity: 0.78; }
-    #focus-title { --section-accent: var(--gold); }
     #experience-title { --section-accent: var(--mint); }
     #education-title { --section-accent: var(--violet); }
     #credential-title { --section-accent: var(--coral); }
@@ -1254,6 +1253,18 @@
       transform: translateY(-2px);
     }
 
+    .quick-links .dm-note {
+      display: inline-flex;
+      align-items: center;
+      color: var(--light-slate);
+      font-family: "Roboto Mono", monospace !important;
+      font-size: 12px;
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+
+    .quick-links .dm-note.is-shown { opacity: 1; }
+
     .quick-links a:not(.primary-cta) {
       color: var(--light-slate);
       border-color: var(--lightest-navy);
@@ -1300,11 +1311,10 @@
       opacity: 1;
     }
 
-    #focus-title::before { content: "01."; }
-    #experience-title::before { content: "02."; }
-    #education-title::before { content: "03."; }
-    #credential-title::before { content: "04."; }
-    #connect-title::before { content: "05."; }
+    #experience-title::before { content: "01."; }
+    #education-title::before { content: "02."; }
+    #credential-title::before { content: "03."; }
+    #connect-title::before { content: "04."; }
 
     .feature-grid {
       display: grid;
@@ -1488,7 +1498,8 @@
     }
 
     /* Work history mirrors the reference site's compact vertical tab system. */
-    #experience {
+    #experience,
+    #education {
       max-width: 700px;
       margin-right: auto;
       margin-left: auto;
@@ -2030,11 +2041,9 @@
   <header class="site-header">
     <a class="brand" href="#main" aria-label="Yelshaday Gebreselassie home">YG</a>
     <nav class="site-nav" aria-label="Main navigation">
-      <a href="#focus"><span>01.</span> Focus</a>
-      <a href="#experience"><span>02.</span> Experience</a>
-      <a href="#education"><span>03.</span> Education</a>
-      <a href="#credential"><span>04.</span> Credential</a>
-      <a href="#contact"><span>05.</span> Contact</a>
+      <a href="#experience"><span>01.</span> Experience</a>
+      <a href="#education"><span>02.</span> Education</a>
+      <a href="#credential"><span>03.</span> Credential</a>
       <a class="header-cta" href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     </nav>
   </header>
@@ -2063,8 +2072,9 @@
         <p class="eyebrow">Hi, my name is</p>
         <h1 id="profile-name">Yelshaday Gebreselassie</h1>
         <nav class="quick-links" aria-label="Profile links">
-          <a class="primary-cta" href="mailto:g.yelshaday@gmail.com">Get In Touch</a>
-          <a href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a class="primary-cta" href="https://t.me/RefinedConfusion" target="_blank" rel="noopener noreferrer">Telegram</a>
+          <a class="whatsapp-link" href="https://web.whatsapp.com/" target="_blank" rel="noopener noreferrer" data-username="RefinedConfusion" title="Copies my username, RefinedConfusion">WhatsApp</a>
+          <span class="dm-note" role="status" aria-live="polite"></span>
         </nav>
         <p class="location">I support portfolios with precision.</p>
         <p class="role-line">Portfolio Administrator · Bangor, Maine</p>
@@ -2072,68 +2082,6 @@
         <p class="bio">
           Hi! I am a Portfolio Administrator at Penobscot Financial Advisors. My background spans wealth management, banking, insurance, and economic research. I bring graduate training in quantitative economics and international business to careful, dependable financial operations.
         </p>
-      </div>
-    </section>
-
-    <section class="section" id="focus" aria-labelledby="focus-title">
-      <h2 class="section-title" id="focus-title">Professional Focus</h2>
-      <div class="feature-grid">
-        <article class="feature-card">
-          <svg class="chart" viewBox="0 0 640 315" role="img" aria-labelledby="portfolio-chart-title portfolio-chart-desc">
-            <title id="portfolio-chart-title">Portfolio administration chart</title>
-            <desc id="portfolio-chart-desc">An abstract chart showing a steadily rising portfolio line above allocation bars.</desc>
-            <rect width="640" height="315" fill="#fbfbfa"/>
-            <g stroke="#e5e5e2" stroke-width="1">
-              <path d="M55 55H600M55 105H600M55 155H600M55 205H600M55 255H600"/>
-              <path d="M100 36V270M190 36V270M280 36V270M370 36V270M460 36V270M550 36V270"/>
-            </g>
-            <g fill="#d7e1e8">
-              <rect x="86" y="217" width="44" height="38" rx="2"/>
-              <rect x="176" y="196" width="44" height="59" rx="2"/>
-              <rect x="266" y="205" width="44" height="50" rx="2"/>
-              <rect x="356" y="165" width="44" height="90" rx="2"/>
-              <rect x="446" y="178" width="44" height="77" rx="2"/>
-              <rect x="536" y="132" width="44" height="123" rx="2"/>
-            </g>
-            <path d="M70 232 C125 218,150 225,195 198 S265 181,305 169 S385 145,420 132 S505 103,576 76" fill="none" stroke="#4b7fa5" stroke-width="5" stroke-linecap="round"/>
-            <g fill="#fff" stroke="#4b7fa5" stroke-width="4">
-              <circle cx="70" cy="232" r="7"/><circle cx="195" cy="198" r="7"/><circle cx="305" cy="169" r="7"/><circle cx="420" cy="132" r="7"/><circle cx="576" cy="76" r="7"/>
-            </g>
-            <text x="55" y="294" fill="#85837e" font-family="Space Mono, monospace" font-size="14">PRECISION</text>
-            <text x="505" y="294" fill="#85837e" font-family="Space Mono, monospace" font-size="14">SERVICE</text>
-          </svg>
-          <div class="feature-caption">Portfolio Administration &amp;<br>Wealth Management Operations</div>
-          <span class="card-tag">Operations</span>
-        </article>
-
-        <article class="feature-card">
-          <svg class="chart" viewBox="0 0 640 315" role="img" aria-labelledby="economics-chart-title economics-chart-desc">
-            <title id="economics-chart-title">Quantitative economics chart</title>
-            <desc id="economics-chart-desc">An abstract scatter plot with a positive analytical trend.</desc>
-            <rect width="640" height="315" fill="#fbfbfa"/>
-            <g stroke="#e5e5e2" stroke-width="1">
-              <path d="M60 55H595M60 105H595M60 155H595M60 205H595M60 255H595"/>
-              <path d="M105 36V270M195 36V270M285 36V270M375 36V270M465 36V270M555 36V270"/>
-            </g>
-            <path d="M75 242L575 70" stroke="#d49b4f" stroke-width="4" stroke-linecap="round" stroke-dasharray="9 10"/>
-            <g fill="#4b7fa5" opacity=".88">
-              <circle cx="92" cy="229" r="8"/><circle cx="124" cy="215" r="6"/><circle cx="148" cy="230" r="7"/>
-              <circle cx="174" cy="187" r="9"/><circle cx="206" cy="198" r="6"/><circle cx="235" cy="164" r="8"/>
-              <circle cx="265" cy="182" r="6"/><circle cx="297" cy="135" r="9"/><circle cx="329" cy="149" r="7"/>
-              <circle cx="354" cy="121" r="6"/><circle cx="392" cy="113" r="9"/><circle cx="416" cy="128" r="6"/>
-              <circle cx="448" cy="92" r="8"/><circle cx="479" cy="104" r="6"/><circle cx="509" cy="76" r="9"/>
-              <circle cx="545" cy="88" r="7"/>
-            </g>
-            <g fill="#b2676d" opacity=".74">
-              <circle cx="118" cy="177" r="5"/><circle cx="223" cy="221" r="5"/><circle cx="278" cy="113" r="5"/>
-              <circle cx="368" cy="172" r="5"/><circle cx="462" cy="64" r="5"/><circle cx="535" cy="135" r="5"/>
-            </g>
-            <text x="60" y="294" fill="#85837e" font-family="Space Mono, monospace" font-size="14">RESEARCH</text>
-            <text x="494" y="294" fill="#85837e" font-family="Space Mono, monospace" font-size="14">INSIGHT</text>
-          </svg>
-          <div class="feature-caption">Quantitative Economics &amp;<br>Evidence-Based Analysis</div>
-          <span class="card-tag">Research</span>
-        </article>
       </div>
     </section>
 
@@ -2192,24 +2140,33 @@
 
     <section class="section" id="education" aria-labelledby="education-title">
       <h2 class="section-title" id="education-title">Education</h2>
-      <div class="compact-grid">
-        <article class="entry">
-          <p class="entry-title">Master · Quantitative Economics</p>
-          <p class="entry-detail"><strong>University of Maine</strong></p>
-          <p class="entry-meta">September 2019 — May 2021</p>
-        </article>
+      <div class="jobs-layout">
+        <div class="job-tabs" role="tablist" aria-label="Education">
+          <button class="job-tab is-active" id="tab-edu-umaine" type="button" role="tab" aria-selected="true" aria-controls="panel-edu-umaine" tabindex="0">UMaine</button>
+          <button class="job-tab" id="tab-edu-bsl" type="button" role="tab" aria-selected="false" aria-controls="panel-edu-bsl" tabindex="-1">BSL</button>
+          <button class="job-tab" id="tab-edu-unity" type="button" role="tab" aria-selected="false" aria-controls="panel-edu-unity" tabindex="-1">Unity</button>
+          <span class="job-highlight" aria-hidden="true"></span>
+        </div>
 
-        <article class="entry">
-          <p class="entry-title">Master · International Business</p>
-          <p class="entry-detail"><strong>Business School Lausanne</strong></p>
-          <p class="entry-meta">September 2017 — June 2019</p>
-        </article>
+        <div class="job-panels">
+          <article class="job-panel is-active" id="panel-edu-umaine" role="tabpanel" aria-labelledby="tab-edu-umaine">
+            <h3>Master, Quantitative Economics <span>@ University of Maine</span></h3>
+            <p class="job-period">September 2019 — May 2021</p>
+            <ul class="job-details"><li>Orono, Maine</li></ul>
+          </article>
 
-        <article class="entry">
-          <p class="entry-title">Bachelor · Economics</p>
-          <p class="entry-detail"><strong>Unity University</strong></p>
-          <p class="entry-meta">February 2014 — July 2017</p>
-        </article>
+          <article class="job-panel" id="panel-edu-bsl" role="tabpanel" aria-labelledby="tab-edu-bsl" hidden>
+            <h3>Master, International Business <span>@ Business School Lausanne</span></h3>
+            <p class="job-period">September 2017 — June 2019</p>
+            <ul class="job-details"><li>Lausanne, Switzerland</li></ul>
+          </article>
+
+          <article class="job-panel" id="panel-edu-unity" role="tabpanel" aria-labelledby="tab-edu-unity" hidden>
+            <h3>Bachelor, Economics <span>@ Unity University</span></h3>
+            <p class="job-period">February 2014 — July 2017</p>
+            <ul class="job-details"><li>Addis Ababa, Ethiopia</li></ul>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -2223,15 +2180,6 @@
         </div>
         <span class="credential-badge" aria-label="Series 65 credential">65</span>
       </article>
-    </section>
-
-    <section class="section" id="contact" aria-labelledby="connect-title">
-      <h2 class="section-title" id="connect-title">What's Next?</h2>
-      <h3 class="contact-heading">Get In Touch</h3>
-      <p class="connect">
-        I welcome thoughtful conversations about wealth management, financial operations, economics, and professional opportunities.
-        <a href="mailto:g.yelshaday@gmail.com">Send me an email</a>.
-      </p>
     </section>
 
     <footer class="footer">
@@ -2268,49 +2216,67 @@
       const sections = Array.from(document.querySelectorAll('.section'));
       sections.forEach((section) => section.classList.add('reveal-section'));
 
-      const jobTabs = Array.from(document.querySelectorAll('.job-tab'));
-      const jobPanels = Array.from(document.querySelectorAll('.job-panel'));
+      document.querySelectorAll('.jobs-layout').forEach((layout) => {
+        const tabList = layout.querySelector('.job-tabs');
+        const tabs = Array.from(layout.querySelectorAll('.job-tab'));
+        const panels = Array.from(layout.querySelectorAll('.job-panel'));
 
-      const activateJob = (selectedTab, moveFocus = false) => {
-        const selectedIndex = jobTabs.indexOf(selectedTab);
-        document.querySelector('.job-tabs')?.style.setProperty('--job-index', selectedIndex);
+        const activate = (selectedTab, moveFocus = false) => {
+          tabList?.style.setProperty('--job-index', tabs.indexOf(selectedTab));
+          tabs.forEach((tab) => {
+            const isActive = tab === selectedTab;
+            tab.classList.toggle('is-active', isActive);
+            tab.setAttribute('aria-selected', String(isActive));
+            tab.tabIndex = isActive ? 0 : -1;
+          });
+          panels.forEach((panel) => {
+            const isActive = panel.id === selectedTab.getAttribute('aria-controls');
+            panel.hidden = !isActive;
+            panel.classList.toggle('is-active', isActive);
+          });
+          if (moveFocus) selectedTab.focus();
+        };
 
-        jobTabs.forEach((tab) => {
-          const isActive = tab === selectedTab;
-          tab.classList.toggle('is-active', isActive);
-          tab.setAttribute('aria-selected', String(isActive));
-          tab.tabIndex = isActive ? 0 : -1;
+        tabs.forEach((tab, index) => {
+          tab.addEventListener('click', () => activate(tab));
+          tab.addEventListener('keydown', (event) => {
+            let nextIndex = index;
+            if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
+              nextIndex = (index + 1) % tabs.length;
+            } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
+              nextIndex = (index - 1 + tabs.length) % tabs.length;
+            } else if (event.key === 'Home') {
+              nextIndex = 0;
+            } else if (event.key === 'End') {
+              nextIndex = tabs.length - 1;
+            } else {
+              return;
+            }
+            event.preventDefault();
+            activate(tabs[nextIndex], true);
+          });
         });
+      });
 
-        jobPanels.forEach((panel) => {
-          const isActive = panel.id === selectedTab.getAttribute('aria-controls');
-          panel.hidden = !isActive;
-          panel.classList.toggle('is-active', isActive);
-        });
-
-        if (moveFocus) selectedTab.focus();
-      };
-
-      jobTabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => activateJob(tab));
-        tab.addEventListener('keydown', (event) => {
-          let nextIndex = index;
-
-          if (event.key === 'ArrowDown' || event.key === 'ArrowRight') {
-            nextIndex = (index + 1) % jobTabs.length;
-          } else if (event.key === 'ArrowUp' || event.key === 'ArrowLeft') {
-            nextIndex = (index - 1 + jobTabs.length) % jobTabs.length;
-          } else if (event.key === 'Home') {
-            nextIndex = 0;
-          } else if (event.key === 'End') {
-            nextIndex = jobTabs.length - 1;
-          } else {
-            return;
-          }
-
-          event.preventDefault();
-          activateJob(jobTabs[nextIndex], true);
-        });
+      const waLink = document.querySelector('.whatsapp-link');
+      const dmNote = document.querySelector('.dm-note');
+      let noteTimer;
+      waLink?.addEventListener('click', () => {
+        const username = waLink.dataset.username;
+        const show = (text) => {
+          if (!dmNote) return;
+          dmNote.textContent = text;
+          dmNote.classList.add('is-shown');
+          clearTimeout(noteTimer);
+          noteTimer = setTimeout(() => dmNote.classList.remove('is-shown'), 4000);
+        };
+        const fallback = `Search "${username}" in WhatsApp`;
+        try {
+          navigator.clipboard.writeText(username)
+            .then(() => show(`Copied "${username}", search it in WhatsApp`), () => show(fallback));
+        } catch (e) {
+          show(fallback);
+        }
       });
 
       if (reduceMotion || !('IntersectionObserver' in window)) {
