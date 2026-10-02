@@ -2212,8 +2212,107 @@
     .view-all:focus-visible { background: rgba(100, 255, 218, 0.1); }
     .view-all[hidden] { display: none; }
 
-    .post-list .post-card + .post-card { border-top: 0; }
-    .post-list .post-card[hidden] { display: none; }
+    .post-item {
+      border-top: 1px solid var(--lightest-navy);
+      border-bottom: 1px solid var(--lightest-navy);
+    }
+    .post-item + .post-item { border-top: 0; }
+    .post-item[hidden] { display: none; }
+    .post-item .post-card { border: 0; padding-bottom: 8px; }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      gap: 22px;
+      height: 40px;
+      padding-bottom: 14px;
+      opacity: 0;
+      transform: translateY(-4px);
+      pointer-events: none;
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .post-item:hover .post-actions,
+    .post-item:focus-within .post-actions,
+    .post-reader .post-actions {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+
+    @media (hover: none) {
+      .post-actions { opacity: 1; transform: none; pointer-events: auto; }
+    }
+
+    .post-action {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 2px;
+      color: var(--slate);
+      border: 0;
+      background: none;
+      font-family: "Roboto Mono", monospace !important;
+      font-size: 13px;
+      cursor: pointer;
+      transition: color 150ms ease;
+    }
+
+    .post-action svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .post-action:hover,
+    .post-action:focus-visible { color: var(--green); }
+    .post-action--share { margin-left: auto; }
+    .post-action.is-liked { color: #ff6b81; }
+    .post-action.is-liked svg { fill: currentColor; }
+    .post-action.is-liked .like-pop { animation: likePop 300ms ease; }
+    .post-action .count:empty { display: none; }
+
+    @keyframes likePop {
+      50% { transform: scale(1.3); }
+    }
+
+    .share-toast {
+      position: fixed;
+      left: 50%;
+      bottom: 28px;
+      z-index: 2000;
+      padding: 10px 16px;
+      color: var(--navy);
+      border-radius: 4px;
+      background: var(--green);
+      font-family: "Roboto Mono", monospace !important;
+      font-size: 13px;
+      opacity: 0;
+      transform: translate(-50%, 10px);
+      pointer-events: none;
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+    .share-toast.is-shown { opacity: 1; transform: translate(-50%, 0); }
+
+    .post-reader .post-actions {
+      height: auto;
+      margin-top: 8px;
+      padding: 14px 0;
+      border-top: 1px solid var(--lightest-navy);
+      border-bottom: 1px solid var(--lightest-navy);
+    }
+
+    .post-comments { margin-top: 40px; }
+    .post-comments h2 {
+      margin: 0 0 16px;
+      color: var(--lightest-slate);
+      font-size: 22px;
+    }
+    .post-comments__note { color: var(--slate); font-size: 15px; }
 
     .post-card {
       display: grid;
@@ -2222,8 +2321,6 @@
       align-items: center;
       padding: 24px 0;
       color: inherit;
-      border-top: 1px solid var(--lightest-navy);
-      border-bottom: 1px solid var(--lightest-navy);
     }
 
     .post-card:hover .post-card__title { color: var(--green); }
@@ -2434,6 +2531,49 @@
       .post-reader { animation: none; }
     }
     .job-details li + li { margin-top: 10px; }
+
+    .visually-hidden {
+      position: absolute !important;
+      width: 1px; height: 1px;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+    }
+    .comment-form { display: grid; gap: 10px; margin-bottom: 28px; }
+    .comment-form input,
+    .comment-form textarea {
+      width: 100%;
+      padding: 12px 14px;
+      color: var(--lightest-slate);
+      border: 1px solid var(--lightest-navy);
+      border-radius: 4px;
+      background: var(--light-navy);
+      font: inherit;
+      font-size: 15px;
+      resize: vertical;
+    }
+    .comment-form input:focus,
+    .comment-form textarea:focus { outline: none; border-color: var(--green); }
+    .comment-form .comment-form__trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .comment-form__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .comment-form__status { margin: 0; color: var(--slate); font-size: 13px; }
+    .comment-form button {
+      padding: 10px 20px;
+      color: var(--green);
+      border: 1px solid var(--green);
+      border-radius: 4px;
+      background: transparent;
+      font-family: "Roboto Mono", monospace !important;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .comment-form button:hover { background: rgba(100, 255, 218, 0.1); }
+    .comment-form button:disabled { opacity: 0.5; cursor: default; }
+    .comment-list { margin: 0; padding: 0; list-style: none; }
+    .comment { padding: 16px 0; border-top: 1px solid var(--lightest-navy); }
+    .comment__meta { margin: 0 0 6px; color: var(--slate); font-family: "Roboto Mono", monospace !important; font-size: 12px; }
+    .comment__name { color: var(--lightest-slate); font-weight: 600; }
+    .comment__body { margin: 0; color: var(--light-slate); font-size: 16px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
   </style>
 </head>
 <body>
@@ -2633,6 +2773,8 @@
             <p>Here&rsquo;s the thing, though. I don&rsquo;t look at the loss column anymore. I look at the game counts. 235 games against someone who beats me two times out of three isn&rsquo;t a record. It&rsquo;s a relationship. You don&rsquo;t get better by winning. You get better by having someone, or something, that refuses to let you win, and showing up anyway.</p>
             <p class="post-closer">Her name is Wendy. And I&rsquo;m not done.</p>
       </div>
+      <div class="post-actions" data-post="post-wendy" data-title="Her Name Is Wendy"></div>
+      <section class="post-comments" id="post-wendy-comments" aria-label="Comments"></section>
       <footer class="post__footer">
         <a class="post-reader__back" href="#read">&larr; Back to site</a>
       </footer>
@@ -2761,10 +2903,253 @@
       });
       window.matchMedia('(min-width: 821px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
+      /* ---------- Like / comment / share ----------
+         Likes and comments are stored in Supabase so every visitor sees the same counts.
+         Paste your Project URL and publishable key below to switch them on. */
+      const SUPABASE = {
+        url: 'https://jachzcbpicnqzleuvlpg.supabase.co',
+        key: 'sb_publishable_ZCLskDkH44l2sPM1w6AnKw_aXllZZBl'
+      };
+      const live = Boolean(SUPABASE.url && SUPABASE.key);
+      const SITE = 'https://yelshg.github.io/';
+      const icons = {
+        like: '<svg viewBox="0 0 24 24" aria-hidden="true" class="like-pop"><path d="M12 20.5s-7.5-4.6-9.2-9.3C1.6 7.8 3.9 4.5 7.3 4.5c2 0 3.6 1.1 4.7 2.7 1.1-1.6 2.7-2.7 4.7-2.7 3.4 0 5.7 3.3 4.5 6.7-1.7 4.7-9.2 9.3-9.2 9.3z"/></svg>',
+        comment: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12z"/></svg>',
+        share: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 15V3.5M7.5 8 12 3.5 16.5 8M5 13v6.5h14V13"/></svg>'
+      };
+      const store = {
+        get(key) { try { return localStorage.getItem(key); } catch (e) { return null; } },
+        set(key, value) { try { value == null ? localStorage.removeItem(key) : localStorage.setItem(key, value); } catch (e) {} }
+      };
+      const visitorId = (() => {
+        let id = store.get('visitor-id');
+        if (!id) {
+          id = (crypto.randomUUID && crypto.randomUUID()) ||
+            'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+              const r = Math.random() * 16 | 0;
+              return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+          store.set('visitor-id', id);
+        }
+        return id;
+      })();
+
+      const api = async (path, options = {}) => {
+        const res = await fetch(SUPABASE.url.replace(/\/$/, '') + '/rest/v1/' + path, {
+          ...options,
+          headers: { apikey: SUPABASE.key, 'Content-Type': 'application/json', ...(options.headers || {}) }
+        });
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : null;
+        if (!res.ok) throw new Error((data && (data.message || data.hint)) || 'Something went wrong.');
+        return data;
+      };
+      const rpc = (fn, args) => api('rpc/' + fn, { method: 'POST', body: JSON.stringify(args) });
+
+      const toast = document.createElement('div');
+      toast.className = 'share-toast';
+      toast.setAttribute('role', 'status');
+      document.body.appendChild(toast);
+      let toastTimer;
+      const showToast = (text) => {
+        toast.textContent = text;
+        toast.classList.add('is-shown');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => toast.classList.remove('is-shown'), 2400);
+      };
+
+      /* Shared state per article */
+      const stats = {};
+      const renderers = {};
+      const renderAll = (post) => (renderers[post] || []).forEach((fn) => fn());
+      const fmt = (n) => (n ? Number(n).toLocaleString() : '');
+
+      const allPosts = () => Array.from(new Set(
+        Array.from(document.querySelectorAll('[data-post], .post-list .post-card'))
+          .map((el) => el.dataset.post || (el.getAttribute('href') || '').replace('#', ''))
+          .filter(Boolean)
+      ));
+      const loadStats = async () => {
+        if (!live) return;
+        try {
+          const rows = await rpc('post_stats', { p_posts: allPosts() });
+          (rows || []).forEach((r) => { stats[r.post] = { likes: Number(r.likes), comments: Number(r.comments) }; renderAll(r.post); });
+        } catch (e) { /* counts just stay hidden */ }
+      };
+
+      const openComments = (post) => {
+        if (location.hash !== '#' + post) location.hash = post;
+        setTimeout(() => {
+          document.getElementById(post + '-comments')?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+        }, 150);
+      };
+
+      const sharePost = async (post, title) => {
+        const url = SITE + '#' + post;
+        if (navigator.share && matchMedia('(hover: none)').matches) {
+          try { await navigator.share({ title, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
+        }
+        try {
+          await navigator.clipboard.writeText(url);
+          showToast('Link copied');
+        } catch (e) {
+          showToast(url);
+        }
+      };
+
+      const toggleLike = async (post) => {
+        const key = 'liked:' + post;
+        const wasLiked = store.get(key) === '1';
+        // Update instantly, then confirm with the server.
+        store.set(key, wasLiked ? null : '1');
+        if (stats[post]) stats[post].likes = Math.max(0, stats[post].likes + (wasLiked ? -1 : 1));
+        renderAll(post);
+        if (!live) return;
+        try {
+          const result = await rpc('toggle_like', { p_post: post, p_visitor: visitorId });
+          store.set(key, result.liked ? '1' : null);
+          stats[post] = { ...(stats[post] || { comments: 0 }), likes: Number(result.likes) };
+        } catch (e) {
+          store.set(key, wasLiked ? '1' : null);
+          if (stats[post]) stats[post].likes = Math.max(0, stats[post].likes + (wasLiked ? 1 : -1));
+          showToast('Could not save your like. Please try again.');
+        }
+        renderAll(post);
+      };
+
+      const buildActions = (bar, post, title) => {
+        bar.setAttribute('role', 'group');
+        bar.setAttribute('aria-label', 'Article actions');
+        bar.innerHTML =
+          `<button class="post-action post-action--like" type="button" aria-pressed="false" aria-label="Like">${icons.like}<span class="count"></span></button>` +
+          `<button class="post-action post-action--comment" type="button" aria-label="Comments">${icons.comment}<span class="count"></span></button>` +
+          `<button class="post-action post-action--share" type="button" aria-label="Share">${icons.share}</button>`;
+        const like = bar.querySelector('.post-action--like');
+        const likeCount = like.querySelector('.count');
+        const commentCount = bar.querySelector('.post-action--comment .count');
+
+        const render = () => {
+          const liked = store.get('liked:' + post) === '1';
+          like.classList.toggle('is-liked', liked);
+          like.setAttribute('aria-pressed', String(liked));
+          const s = stats[post];
+          likeCount.textContent = s ? fmt(s.likes) : '';
+          commentCount.textContent = s ? fmt(s.comments) : '';
+        };
+
+        like.addEventListener('click', (event) => { event.preventDefault(); toggleLike(post); });
+        bar.querySelector('.post-action--comment').addEventListener('click', (event) => { event.preventDefault(); openComments(post); });
+        bar.querySelector('.post-action--share').addEventListener('click', (event) => { event.preventDefault(); sharePost(post, title); });
+
+        (renderers[post] = renderers[post] || []).push(render);
+        render();
+      };
+
+      // Every article card gets the hover bar automatically.
+      document.querySelectorAll('.post-list .post-card').forEach((card) => {
+        const post = (card.getAttribute('href') || '').replace('#', '');
+        const title = card.querySelector('.post-card__title')?.textContent.trim() || document.title;
+        const item = document.createElement('div');
+        item.className = 'post-item';
+        card.parentNode.insertBefore(item, card);
+        item.appendChild(card);
+        const bar = document.createElement('div');
+        bar.className = 'post-actions';
+        item.appendChild(bar);
+        buildActions(bar, post, title);
+      });
+
+      // Bars at the end of each article.
+      document.querySelectorAll('.post-reader .post-actions').forEach((bar) => {
+        buildActions(bar, bar.dataset.post, bar.dataset.title || document.title);
+      });
+
+      /* Comments inside each article */
+      const escapeHtml = (str) => String(str).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+      const timeAgo = (iso) => {
+        const d = new Date(iso);
+        const secs = (Date.now() - d.getTime()) / 1000;
+        if (secs < 60) return 'just now';
+        if (secs < 3600) return Math.floor(secs / 60) + 'm ago';
+        if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
+        return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
+      };
+      const commentHtml = (c) =>
+        `<li class="comment"><p class="comment__meta"><span class="comment__name">${escapeHtml(c.name)}</span> · <time datetime="${escapeHtml(c.created_at)}">${timeAgo(c.created_at)}</time></p>` +
+        `<p class="comment__body">${escapeHtml(c.body)}</p></li>`;
+
+      const loadedComments = new Set();
+      const loadComments = async (post) => {
+        const box = document.getElementById(post + '-comments');
+        if (!box || loadedComments.has(post)) return;
+        loadedComments.add(post);
+        if (!live) {
+          box.innerHTML = '<h2>Comments</h2><p class="post-comments__note">Comments are opening soon.</p>';
+          return;
+        }
+        box.innerHTML =
+          '<h2>Comments</h2>' +
+          '<form class="comment-form" novalidate>' +
+            `<label class="visually-hidden" for="${post}-name">Your name</label>` +
+            `<input id="${post}-name" name="name" type="text" maxlength="60" placeholder="Your name" autocomplete="name" required>` +
+            `<label class="visually-hidden" for="${post}-body">Comment</label>` +
+            `<textarea id="${post}-body" name="body" maxlength="2000" rows="3" placeholder="Write a comment…" required></textarea>` +
+            '<input class="comment-form__trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+            '<div class="comment-form__row"><p class="comment-form__status" role="status"></p><button type="submit">Post</button></div>' +
+          '</form>' +
+          '<ul class="comment-list"><li class="post-comments__note">Loading comments…</li></ul>';
+
+        const form = box.querySelector('form');
+        const list = box.querySelector('.comment-list');
+        const status = box.querySelector('.comment-form__status');
+        const nameInput = form.elements.name;
+        nameInput.value = store.get('comment-name') || '';
+
+        try {
+          const rows = await api(`comments?post=eq.${encodeURIComponent(post)}&select=id,name,body,created_at&order=created_at.desc&limit=200`);
+          list.innerHTML = rows.length ? rows.map(commentHtml).join('') : '<li class="post-comments__note comment-empty">Be the first to comment.</li>';
+        } catch (e) {
+          list.innerHTML = '<li class="post-comments__note">Comments could not load right now.</li>';
+        }
+
+        form.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          if (form.elements.website.value) return; // bots fill the hidden field
+          const name = nameInput.value.trim();
+          const body = form.elements.body.value.trim();
+          if (!name || !body) { status.textContent = 'Please add your name and a comment.'; return; }
+          const button = form.querySelector('button');
+          button.disabled = true;
+          status.textContent = 'Posting…';
+          try {
+            const row = await rpc('add_comment', { p_post: post, p_name: name, p_body: body, p_visitor: visitorId });
+            store.set('comment-name', name);
+            list.querySelector('.comment-empty')?.remove();
+            list.insertAdjacentHTML('afterbegin', commentHtml(row));
+            form.elements.body.value = '';
+            status.textContent = 'Posted. Thank you!';
+            stats[post] = { ...(stats[post] || { likes: 0, comments: 0 }) };
+            stats[post].comments += 1;
+            renderAll(post);
+          } catch (e) {
+            status.textContent = e.message || 'Could not post. Please try again.';
+          } finally {
+            button.disabled = false;
+          }
+        });
+      };
+      const loadForHash = () => {
+        const id = location.hash.slice(1);
+        if (document.getElementById(id)?.classList.contains('post-reader')) loadComments(id);
+      };
+      window.addEventListener('hashchange', loadForHash);
+      loadForHash();
+      loadStats();
+
       const POSTS_SHOWN = 4;
       const postList = document.getElementById('post-list');
       const viewAll = document.querySelector('.view-all');
-      const postCards = postList ? Array.from(postList.querySelectorAll('.post-card')) : [];
+      const postCards = postList ? Array.from(postList.querySelectorAll('.post-item')) : [];
       if (viewAll && postCards.length > POSTS_SHOWN) {
         const setExpanded = (expanded) => {
           postCards.forEach((card, i) => { card.hidden = !expanded && i >= POSTS_SHOWN; });
