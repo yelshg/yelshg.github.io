@@ -1022,6 +1022,16 @@
     .site-nav a:hover { color: var(--green); }
     .site-nav a span { color: var(--green); }
 
+    /* Bigger click area for the top menu links (the text itself is only ~19px tall). */
+    @media (min-width: 821px) {
+      .site-nav a:not(.header-cta) {
+        position: relative;
+        padding: 16px 12px;
+        margin: -16px -12px;
+        cursor: pointer;
+      }
+    }
+
     .site-nav .header-cta {
       margin-left: 4px;
       padding: 10px 15px;
@@ -3206,6 +3216,14 @@
         setExpanded(false);
         viewAll.addEventListener('click', () => setExpanded(viewAll.getAttribute('aria-expanded') !== 'true'));
       }
+
+      // Menu links: show the target section straight away so the page lands in the right place first time.
+      document.querySelectorAll('.site-nav a[href^="#"], .brand[href^="#"]').forEach((link) => {
+        link.addEventListener('click', () => {
+          const target = document.querySelector(link.getAttribute('href'));
+          if (target && target.classList.contains('reveal-section')) target.classList.add('is-visible');
+        });
+      });
 
       function startSectionReveal() {
       if (reduceMotion || !('IntersectionObserver' in window)) {
