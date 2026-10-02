@@ -3005,7 +3005,8 @@
       };
 
       const sharePost = async (post, title) => {
-        const url = SITE + '#' + post;
+        // Each article has its own small page (e.g. /wendy) so link previews show the article's picture and subtitle.
+        const url = SITE + post.replace(/^post-/, '');
         if (navigator.share && matchMedia('(hover: none)').matches) {
           try { await navigator.share({ title, url }); return; } catch (e) { if (e && e.name === 'AbortError') return; }
         }
