@@ -2539,8 +2539,14 @@
       clip: rect(0 0 0 0);
       white-space: nowrap;
     }
-    .comment-form { display: grid; gap: 10px; margin-bottom: 28px; }
-    .comment-form input,
+    .reply-title { margin: 36px 0 10px; color: var(--lightest-slate); font-size: 20px; font-weight: 600; }
+    .reply-note { margin: 0 0 22px; color: var(--slate); font-size: 15px; }
+    .req { color: var(--green); }
+    .comment-form { display: grid; gap: 8px; }
+    .comment-form label { margin-top: 10px; color: var(--light-slate); font-size: 15px; }
+    .comment-form input[type="text"],
+    .comment-form input[type="email"],
+    .comment-form input[type="url"],
     .comment-form textarea {
       width: 100%;
       padding: 12px 14px;
@@ -2555,20 +2561,34 @@
     .comment-form input:focus,
     .comment-form textarea:focus { outline: none; border-color: var(--green); }
     .comment-form .comment-form__trap { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
-    .comment-form__row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-    .comment-form__status { margin: 0; color: var(--slate); font-size: 13px; }
-    .comment-form button {
-      padding: 10px 20px;
-      color: var(--green);
-      border: 1px solid var(--green);
-      border-radius: 4px;
-      background: transparent;
-      font-family: "Roboto Mono", monospace !important;
-      font-size: 13px;
+    .comment-form .comment-form__save {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 16px;
+      color: var(--slate);
+      font-size: 14px;
       cursor: pointer;
     }
-    .comment-form button:hover { background: rgba(100, 255, 218, 0.1); }
+    .comment-form__save input { margin-top: 3px; accent-color: var(--green); }
+    .comment-form__row { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-top: 14px; }
+    .comment-form__status { margin: 0; color: var(--slate); font-size: 13px; }
+    .comment-form button {
+      padding: 12px 24px;
+      color: var(--navy);
+      border: 0;
+      border-radius: 4px;
+      background: var(--green);
+      font-family: "Roboto Mono", monospace !important;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: filter 150ms ease;
+    }
+    .comment-form button:hover { filter: brightness(1.1); }
     .comment-form button:disabled { opacity: 0.5; cursor: default; }
+    a.comment__name { color: var(--green); }
+    a.comment__name:hover { text-decoration: underline; }
     .comment-list { margin: 0; padding: 0; list-style: none; }
     .comment { padding: 16px 0; border-top: 1px solid var(--lightest-navy); }
     .comment__meta { margin: 0 0 6px; color: var(--slate); font-family: "Roboto Mono", monospace !important; font-size: 12px; }
@@ -3074,9 +3094,15 @@
         if (secs < 86400) return Math.floor(secs / 3600) + 'h ago';
         return d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
       };
-      const commentHtml = (c) =>
-        `<li class="comment"><p class="comment__meta"><span class="comment__name">${escapeHtml(c.name)}</span> · <time datetime="${escapeHtml(c.created_at)}">${timeAgo(c.created_at)}</time></p>` +
-        `<p class="comment__body">${escapeHtml(c.body)}</p></li>`;
+      const safeUrl = (u) => (/^https?:\/\//i.test(u || '') ? u : '');
+      const commentHtml = (c) => {
+        const url = safeUrl(c.website);
+        const name = url
+          ? `<a class="comment__name" href="${escapeHtml(url)}" target="_blank" rel="nofollow ugc noopener noreferrer">${escapeHtml(c.name)}</a>`
+          : `<span class="comment__name">${escapeHtml(c.name)}</span>`;
+        return `<li class="comment"><p class="comment__meta">${name} · <time datetime="${escapeHtml(c.created_at)}">${timeAgo(c.created_at)}</time></p>` +
+          `<p class="comment__body">${escapeHtml(c.body)}</p></li>`;
+      };
 
       const loadedComments = new Set();
       const loadComments = async (post) => {
@@ -3087,46 +3113,65 @@
           box.innerHTML = '<h2>Comments</h2><p class="post-comments__note">Comments are opening soon.</p>';
           return;
         }
+        const id = (f) => `${post}-${f}`;
         box.innerHTML =
           '<h2>Comments</h2>' +
+          '<ul class="comment-list"><li class="post-comments__note">Loading comments…</li></ul>' +
+          '<h3 class="reply-title">Leave a Reply</h3>' +
+          '<p class="reply-note">Your email address will not be published. Required fields are marked <span class="req">*</span></p>' +
           '<form class="comment-form" novalidate>' +
-            `<label class="visually-hidden" for="${post}-name">Your name</label>` +
-            `<input id="${post}-name" name="name" type="text" maxlength="60" placeholder="Your name" autocomplete="name" required>` +
-            `<label class="visually-hidden" for="${post}-body">Comment</label>` +
-            `<textarea id="${post}-body" name="body" maxlength="2000" rows="3" placeholder="Write a comment…" required></textarea>` +
-            '<input class="comment-form__trap" name="website" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-            '<div class="comment-form__row"><p class="comment-form__status" role="status"></p><button type="submit">Post</button></div>' +
-          '</form>' +
-          '<ul class="comment-list"><li class="post-comments__note">Loading comments…</li></ul>';
+            `<label for="${id('body')}">Comment <span class="req">*</span></label>` +
+            `<textarea id="${id('body')}" name="body" maxlength="2000" rows="7" required></textarea>` +
+            `<label for="${id('name')}">Name <span class="req">*</span></label>` +
+            `<input id="${id('name')}" name="name" type="text" maxlength="60" autocomplete="name" required>` +
+            `<label for="${id('email')}">Email <span class="req">*</span></label>` +
+            `<input id="${id('email')}" name="email" type="email" maxlength="254" autocomplete="email" required>` +
+            `<label for="${id('website')}">Website</label>` +
+            `<input id="${id('website')}" name="website" type="url" maxlength="200" autocomplete="url">` +
+            '<input class="comment-form__trap" name="homepage" type="text" tabindex="-1" autocomplete="off" aria-hidden="true">' +
+            `<label class="comment-form__save" for="${id('save')}"><input id="${id('save')}" name="save" type="checkbox"> Save my name, email, and website in this browser for the next time I comment.</label>` +
+            '<div class="comment-form__row"><button type="submit">Post Comment</button><p class="comment-form__status" role="status"></p></div>' +
+          '</form>';
 
         const form = box.querySelector('form');
         const list = box.querySelector('.comment-list');
         const status = box.querySelector('.comment-form__status');
-        const nameInput = form.elements.name;
-        nameInput.value = store.get('comment-name') || '';
+        const f = form.elements;
+        let saved = null;
+        try { saved = JSON.parse(store.get('commenter') || 'null'); } catch (e) {}
+        if (saved) {
+          f.name.value = saved.name || '';
+          f.email.value = saved.email || '';
+          f.website.value = saved.website || '';
+          f.save.checked = true;
+        }
 
         try {
-          const rows = await api(`comments?post=eq.${encodeURIComponent(post)}&select=id,name,body,created_at&order=created_at.desc&limit=200`);
-          list.innerHTML = rows.length ? rows.map(commentHtml).join('') : '<li class="post-comments__note comment-empty">Be the first to comment.</li>';
+          const rows = await api(`comments?post=eq.${encodeURIComponent(post)}&select=id,name,website,body,created_at&order=created_at.asc&limit=200`);
+          list.innerHTML = rows.length ? rows.map(commentHtml).join('') : '<li class="post-comments__note comment-empty">No comments yet. Be the first to reply.</li>';
         } catch (e) {
           list.innerHTML = '<li class="post-comments__note">Comments could not load right now.</li>';
         }
 
         form.addEventListener('submit', async (event) => {
           event.preventDefault();
-          if (form.elements.website.value) return; // bots fill the hidden field
-          const name = nameInput.value.trim();
-          const body = form.elements.body.value.trim();
-          if (!name || !body) { status.textContent = 'Please add your name and a comment.'; return; }
+          if (f.homepage.value) return; // bots fill the hidden field
+          const name = f.name.value.trim();
+          const email = f.email.value.trim();
+          const website = f.website.value.trim();
+          const body = f.body.value.trim();
+          if (!body) { status.textContent = 'Please write a comment.'; f.body.focus(); return; }
+          if (!name) { status.textContent = 'Please enter your name.'; f.name.focus(); return; }
+          if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { status.textContent = 'Please enter a valid email address.'; f.email.focus(); return; }
           const button = form.querySelector('button');
           button.disabled = true;
           status.textContent = 'Posting…';
           try {
-            const row = await rpc('add_comment', { p_post: post, p_name: name, p_body: body, p_visitor: visitorId });
-            store.set('comment-name', name);
+            const row = await rpc('add_comment', { p_post: post, p_name: name, p_email: email, p_website: website, p_body: body, p_visitor: visitorId });
+            store.set('commenter', f.save.checked ? JSON.stringify({ name, email, website }) : null);
             list.querySelector('.comment-empty')?.remove();
-            list.insertAdjacentHTML('afterbegin', commentHtml(row));
-            form.elements.body.value = '';
+            list.insertAdjacentHTML('beforeend', commentHtml(row));
+            f.body.value = '';
             status.textContent = 'Posted. Thank you!';
             stats[post] = { ...(stats[post] || { likes: 0, comments: 0 }) };
             stats[post].comments += 1;
