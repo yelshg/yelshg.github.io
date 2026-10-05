@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YRebal Demo</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111827'/%3E%3Cpath d='M8 21l5-5 4 3 7-8' stroke='%2300bb20' stroke-width='2.8' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<meta name="robots" content="noindex">
+<script src="../config.js?v=a98024f9ef"></script>
+<script src="gate.js?v=d130bcc1ae"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="styles.css?v=b72fb72e66">
+</head>
+<body>
+<header class="appbar">
+  <a class="brand" href="#home" title="Go to the Overview dashboard">YRebal</a>
+  <nav class="mainnav" aria-label="Main">
+    <a href="#home" data-nav="home">Home</a>
+    <div class="menu-wrap"><button type="button" data-menu data-nav="me" aria-haspopup="menu" aria-expanded="false">Me &#9662;</button>
+      <div class="menu" role="menu" hidden><a role="menuitem" href="#accounts">Accounts</a><a role="menuitem" href="#portfolios">Portfolios</a><a role="menuitem" href="#unassigned">Unassigned Accounts</a></div></div>
+    <a href="#models" data-nav="model">Models</a>
+    <a href="#securities" data-nav="securities">Securities</a>
+    <div class="menu-wrap"><button type="button" data-menu data-nav="rebalance" aria-haspopup="menu" aria-expanded="false">Rebalance &#9662;</button>
+      <div class="menu" role="menu" hidden><a role="menuitem" href="#rebalance">Create Rebalance</a><a role="menuitem" href="#results">Rebalance Results</a></div></div>
+    <a href="#orders" data-nav="orders">Orders</a>
+  </nav>
+  <a class="support-link" href="#help">Support Articles</a>
+  <a class="gear" href="#settings" data-nav="settings" aria-label="Settings" title="Settings"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M19.4 13a7.6 7.6 0 0 0 0-2l2.1-1.6a.5.5 0 0 0 .1-.6l-2-3.5a.5.5 0 0 0-.6-.2l-2.5 1a7.4 7.4 0 0 0-1.7-1l-.4-2.6a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 0-.5.4l-.4 2.7a7.4 7.4 0 0 0-1.7 1l-2.5-1a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11a7.6 7.6 0 0 0 0 2l-2.1 1.6a.5.5 0 0 0-.1.6l2 3.5c.1.2.4.3.6.2l2.5-1c.5.4 1.1.7 1.7 1l.4 2.6c0 .3.3.5.5.5h4c.3 0 .5-.2.5-.4l.4-2.7c.6-.3 1.2-.6 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6L19.4 13ZM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7Z"/></svg></a>
+  <span id="modes"></span>
+</header>
+<div id="view"><p class="hint">Loading...</p></div>
+<div id="modal-root" hidden></div>
+<div id="toast" role="status" hidden></div>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
+<script src="engine.js?v=5c1bd5186b"></script>
+<script src="robinhood.js?v=a0d2f3901e"></script>
+<script src="store.js?v=55e6cfb290"></script>
+<script src="core.js?v=434569631a"></script>
+<script src="history.js?v=f51086ce22"></script>
+<script src="charts.js?v=64044b9ed8"></script>
+<script src="views.js?v=a31a6b16ab"></script>
+<script src="reports.js?v=cfd665256e"></script>
+<script src="result.js?v=fcff9a0a63"></script>
+<script src="help.js?v=52e53fcbfe"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.2/dist/umd/supabase.min.js"></script>
+<script src="../assets/auth.js?v=de1d782c95"></script>
+<script src="demo.js?v=8494b732bc"></script>
+<script src="main.js?v=3b8f3d09f4"></script>
+</body>
+</html>

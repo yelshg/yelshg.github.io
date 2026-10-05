@@ -1,0 +1,20 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Engine parity</title>
+<pre id="out">running...</pre>
+<script src="../engine.js"></script>
+<script src="fixtures.js"></script>
+<script>
+  const lines = []; let failed = 0;
+  for (const c of window.PARITY_CASES) {
+    try {
+      const v = RebalEngine.plan(c.input);
+      const got = v.orders.map((o) => [o.account, o.symbol, o.side, Math.round(o.shares * 1e4) / 1e4]).sort();
+      const ok = JSON.stringify(got) === JSON.stringify(c.expected);
+      if (!ok) failed++;
+      lines.push(`${ok ? "PASS" : "FAIL"} ${c.name}` + (ok ? "" : `\n  python: ${JSON.stringify(c.expected)}\n  js:     ${JSON.stringify(got)}\n  msgs: ${v.messages.join(" | ")}`));
+    } catch (e) { failed++; lines.push(`ERROR ${c.name}: ${e.message}`); }
+  }
+  lines.push(failed ? `${failed} failed` : "ALL PASS");
+  document.getElementById("out").textContent = lines.join("\n");
+</script>
