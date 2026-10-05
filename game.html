@@ -372,7 +372,6 @@
       <div class="gv-comment" aria-live="polite">
         <span class="gv-comment__icon"></span>
         <p class="gv-comment__text"></p>
-        <span class="gv-comment__acc" hidden title="Accuracy of the moves in your own line"></span>
         <span class="gv-comment__eval"></span>
         <button class="gv-resume" type="button" hidden aria-label="Resume game" title="Back to the game">&#x21A9;&#xFE0E; Resume</button>
       </div>
@@ -753,9 +752,6 @@
           bottom.innerHTML = `Accuracy <b>${fmt(acc && acc[me])}</b>`;
           top.innerHTML = `Accuracy <b>${fmt(acc && acc[opp])}</b>`;
           bottom.title = top.title = tip;
-          commentAcc.hidden = !acc;
-          commentAcc.title = tip;
-          commentAcc.innerHTML = `${acc && acc[me] != null ? acc[me].toFixed(1) + '%' : '–'}<small>My accuracy</small>`;
         };
         const drawLive = () => { drawEval(); drawComment(); drawArrows(); };
 
@@ -766,7 +762,6 @@
         const commentIcon = root.querySelector('.gv-comment__icon');
         const commentText = root.querySelector('.gv-comment__text');
         const commentEval = root.querySelector('.gv-comment__eval');
-        const commentAcc = root.querySelector('.gv-comment__acc');
         const readEval = (v) => {
           if (v == null) return null;
           if (typeof v === 'number') {
