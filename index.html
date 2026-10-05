@@ -2796,6 +2796,8 @@
     .gv-comment__icon svg { width: 100%; height: 100%; }
     .gv-comment__text { flex: 1; min-width: 0; margin: 0; color: var(--lightest-slate); font-size: 16px; font-weight: 600; line-height: 1.25; }
     .gv-comment__text small { display: block; margin-top: 2px; overflow: hidden; color: var(--slate); font-size: 12.5px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+    .gv-comment__text small.gv-sugg { color: var(--slate); }
+    .gv-comment__text .gv-best { color: #96be46; font-weight: 700; }
     .gv-comment__eval {
       flex: none; padding: 5px 9px; border-radius: 5px;
       color: var(--lightest-slate); background: var(--lightest-navy);
@@ -3263,6 +3265,9 @@
                   <marker id="gv-arrowhead" markerWidth="3.2" markerHeight="3.2" refX="1.6" refY="1.6" orient="auto" markerUnits="strokeWidth">
                     <path d="M0,0 L3.2,1.6 L0,3.2 z" fill="rgba(255, 170, 0, 0.85)"/>
                   </marker>
+                  <marker id="gv-arrowhead-best" markerWidth="3.2" markerHeight="3.2" refX="1.6" refY="1.6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L3.2,1.6 L0,3.2 z" fill="rgba(150, 190, 70, 0.9)"/>
+                  </marker>
                 </defs>
                 <g class="gv-arrows__lines"></g>
               </svg>
@@ -3282,7 +3287,7 @@
             <button type="button" data-nav="next" aria-label="Next move">&#x25B6;</button>
             <button type="button" data-nav="end" aria-label="Last move">&#x23ED;</button>
           </div>
-          <p class="gv-hint">Move any piece to explore your own line, then press Resume game to go back. On a computer, right-click and drag to draw arrows, or drag the corner button to resize the board.</p>
+          <p class="gv-hint">Move any piece to explore your own line. Stockfish suggests the best reply with a green arrow. Press Resume game to go back. On a computer, right-click and drag to draw arrows, or drag the corner button to resize the board.</p>
           <p class="gv-meta"></p>
           <div class="gv-summary" aria-label="Move quality"></div>
         </div>
@@ -3858,7 +3863,7 @@
 
         // ---- Live engine (Stockfish in a background worker, loaded only when someone explores) ----
         const ENGINE_URL = 'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js';
-        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, pending: null };
+        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, best: null, pending: null };
         const startEngine = () => {
           if (engine.worker || engine.failed) return;
           try {
@@ -3885,6 +3890,8 @@
               else v = 'M' + (Number(mate[1]) * (whiteToMove ? 1 : -1));
               engine.eval = v;
               engine.depth = depth;
+              const pv = line.match(/ pv ([a-h][1-8][a-h][1-8][qrbn]?)/);
+              if (pv) engine.best = pv[1];
               if (explore && explore.chess.fen() === engine.fen) drawLive();
             }
           };
@@ -3894,6 +3901,7 @@
           engine.fen = fen;
           engine.eval = null;
           engine.depth = 0;
+          engine.best = null;
           if (engine.failed) return;
           startEngine();
           if (!engine.ready) { engine.pending = fen; return; }
@@ -3909,7 +3917,17 @@
           if (c.in_draw() || c.in_stalemate()) return 0;
           return engine.fen === c.fen() ? engine.eval : null;
         };
-        const drawLive = () => { drawEval(); drawComment(); };
+        // Engine's best move in the explored position, as { from, to, san }
+        const bestMove = () => {
+          if (!explore || !engine.best || engine.fen !== explore.chess.fen()) return null;
+          const c = explore.chess;
+          if (c.game_over()) return null;
+          const u = engine.best;
+          const t = new Rules(c.fen());
+          const m = t.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || 'q' });
+          return m ? { from: sqIndex(u.slice(0, 2)), to: sqIndex(u.slice(2, 4)), san: m.san } : null;
+        };
+        const drawLive = () => { drawEval(); drawComment(); drawArrows(); };
 
         // ---- Eval bar & comment ----
         const evalEl = root.querySelector('.gv-eval');
@@ -3983,7 +4001,9 @@
             else if (c.in_stalemate()) head = 'Stalemate';
             else if (c.in_draw()) head = 'Draw';
             else if (c.in_check()) head = 'Check!';
-            commentText.innerHTML = `${head}<small>${esc(lineText())}</small>`;
+            const bm = bestMove();
+            const sugg = c.game_over() ? '' : bm ? `Best move: <b class="gv-best">${esc(bm.san)}</b>` : (engine.failed ? '' : 'Finding the best move…');
+            commentText.innerHTML = `${head}<small>${esc(lineText())}</small>` + (sugg ? `<small class="gv-sugg">${sugg}</small>` : '');
             return;
           }
           const v = g.e ? g.e[ply] : null;
@@ -4015,13 +4035,18 @@
         };
         const drawArrows = () => {
           let svg = '';
-          arrows.forEach((key) => {
+          const keys = [...arrows].map((k) => [k, false]);
+          const bm = bestMove();
+          if (bm && !arrows.has(bm.from + '-' + bm.to)) keys.unshift([bm.from + '-' + bm.to, true]);
+          keys.forEach(([key, isBest]) => {
             const [a, b] = key.split('-').map(Number);
             const [x1, y1] = centre(a);
             const [x2, y2] = centre(b);
             const dx = x2 - x1;
             const dy = y2 - y1;
-            const style = 'fill="none" stroke="rgba(255, 170, 0, 0.85)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead)"';
+            const style = isBest
+              ? 'fill="none" stroke="rgba(150, 190, 70, 0.9)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead-best)"'
+              : 'fill="none" stroke="rgba(255, 170, 0, 0.85)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead)"';
             const knight = (Math.abs(dx) === 1 && Math.abs(dy) === 2) || (Math.abs(dx) === 2 && Math.abs(dy) === 1);
             if (knight) {
               // L-shape: go two squares along the long side first, then turn
