@@ -3506,6 +3506,13 @@
         list.addEventListener('click', (e) => {
           const a = e.target.closest('a.gh-row');
           if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
+          // Phones and tablets: open the game right here (pop-up windows don't work reliably there,
+          // especially inside in-app browsers like Telegram, Instagram or LinkedIn)
+          if (window.matchMedia('(pointer: coarse), (max-width: 820px)').matches) {
+            e.preventDefault();
+            window.location.href = a.href;
+            return;
+          }
           const sw = window.screen.availWidth || 1280;
           const sh = window.screen.availHeight || 900;
           const w = Math.min(1240, sw - 40);
