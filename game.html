@@ -1204,7 +1204,7 @@
           }
           movesEl.innerHTML = html;
           drawSummary(g);
-          ply = moves.length; // open on the final position
+          ply = 0; // open on the starting position
           drawBoard();
           document.title = `${ME} vs ${g.o} · ${fmtDate(g.d)}`;
           root.querySelector('.gv-head span').textContent = g.op || 'Starting Position';
