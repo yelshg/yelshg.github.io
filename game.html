@@ -328,9 +328,9 @@
       padding: 10px 16px; color: var(--slate); font-size: 12.5px;
       border-bottom: 1px solid var(--lightest-navy);
     }
-    .gv-panel .gv-moves-slot--desktop { flex: 1; min-height: 0; overflow-y: auto; }
+    .gv-panel .gv-moves-slot--desktop { flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; }
     .gv-moves-slot--desktop .gv-moves {
-      display: block; max-height: none; padding: 0; border: 0; border-radius: 0; background: none;
+      display: block; max-height: none; overflow: visible; padding: 0; border: 0; border-radius: 0; background: none;
       font-family: "Inter", sans-serif; font-size: 14px;
     }
     .gv-moves-slot--desktop .gv-moves li {
@@ -967,9 +967,10 @@
           movesEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', !explore && Number(b.dataset.ply) === ply));
           const on = movesEl.querySelector('button.on');
           // In the side panel the list scrolls inside its panel; on phones it scrolls sideways
-          const vScroll = movesEl.parentElement.classList.contains('gv-moves-slot--desktop') ? movesEl.parentElement : movesEl;
+          const inPanel = movesEl.parentElement.classList.contains('gv-moves-slot--desktop');
+          const vScroll = inPanel ? movesEl.parentElement : movesEl;
           if (on) {
-            if (movesEl.scrollWidth > movesEl.clientWidth + 2) {
+            if (!inPanel) {
               const box = movesEl.getBoundingClientRect();
               const r = on.getBoundingClientRect();
               movesEl.scrollLeft += (r.left + r.width / 2) - (box.left + box.width / 2);
