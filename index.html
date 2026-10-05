@@ -3022,6 +3022,28 @@
       .gv-eval__label { font-size: 7px; letter-spacing: -0.06em; }
       .gv-list { max-height: 360px; }
     }
+
+    /* Header appears only on hover (desktop with a mouse) */
+    .header-hotzone { display: none; }
+    @media (hover: hover) and (pointer: fine) and (min-width: 821px) {
+      .header-hotzone {
+        display: block;
+        position: fixed; top: 0; left: 0; right: 0; z-index: 101;
+        height: 26px;
+      }
+      html.js.is-loaded .site-header {
+        opacity: 0;
+        transform: translateY(-100%);
+        transition: transform 260ms ease 350ms, opacity 260ms ease 350ms;
+      }
+      html.js.is-loaded .header-hotzone:hover + .site-header,
+      html.js.is-loaded .site-header:hover,
+      html.js.is-loaded .site-header:focus-within {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0s;
+      }
+    }
   </style>
 </head>
 <body>
@@ -3036,6 +3058,7 @@
 
   <a class="skip-link" href="#main">Skip to content</a>
 
+  <div class="header-hotzone" aria-hidden="true"></div>
   <header class="site-header">
     <a class="brand" href="#main" aria-label="Yelsh Gebreselassie home">YG</a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
@@ -3273,7 +3296,7 @@
             </select></label>
           </div>
           <ul class="gv-list" aria-label="Games"></ul>
-          <p class="gv-note">Wins with my accuracy between 80% and 89%, from Chess.com. Analysis by Stockfish. Pieces by <a href="https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces" target="_blank" rel="noopener noreferrer">Cburnett</a>, CC BY-SA 3.0. Move rules by <a href="https://github.com/jhlywa/chess.js" target="_blank" rel="noopener noreferrer">chess.js</a>.</p>
+          <p class="gv-note">Wins with my accuracy between 80% and 89%, from Chess.com. Analysis by Stockfish; live analysis while exploring by <a href="https://github.com/niklasf/stockfish.js" target="_blank" rel="noopener noreferrer">stockfish.js</a>. Pieces by <a href="https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces" target="_blank" rel="noopener noreferrer">Cburnett</a>, CC BY-SA 3.0. Move rules by <a href="https://github.com/jhlywa/chess.js" target="_blank" rel="noopener noreferrer">chess.js</a>.</p>
         </div>
       </div>
     </section>
@@ -3786,7 +3809,7 @@
           M: { name: 'Mistake', color: '#ffa459', sym: '?' },
           X: { name: 'Blunder', color: '#fa412d', sym: '??' }
         };
-        const LIST_MARKS = 'XTR'; // only these appear in the move list
+        const LIST_MARKS = 'XTRB'; // only these appear in the move list
         const THUMB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21h4V9H2v12zm20-11c0-1.1-.9-2-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L13.2 1 6.6 7.6C6.2 8 6 8.5 6 9v10c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7.1c.1-.2.2-.5.2-.7v-2z"/></svg>';
         const BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4.5C4.6 3.6 7.8 3.7 11 5.6v14.2c-3.1-1.8-6.3-1.9-9-1V4.5zm20 0c-2.6-.9-5.8-.8-9 1.1v14.2c3.1-1.8 6.3-1.9 9-1V4.5z"/></svg>';
         const EXPLORE = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#64ffda"/><path d="M12 5.5l2.2 4.3 4.3 2.2-4.3 2.2L12 18.5l-2.2-4.3L5.5 12l4.3-2.2z" fill="#0a192f"/></svg>';
@@ -3832,6 +3855,61 @@
           return c.moves({ square: sqName(i), verbose: true });
         };
 
+        // ---- Live engine (Stockfish in a background worker, loaded only when someone explores) ----
+        const ENGINE_URL = 'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js';
+        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, pending: null };
+        const startEngine = () => {
+          if (engine.worker || engine.failed) return;
+          try {
+            const src = `importScripts(${JSON.stringify(ENGINE_URL)});`;
+            engine.worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'application/javascript' })));
+          } catch (e) { engine.failed = true; return; }
+          engine.worker.onerror = () => { engine.failed = true; if (explore) drawLive(); };
+          engine.worker.onmessage = (e) => {
+            const line = String(e.data);
+            if (line === 'uciok') { engine.worker.postMessage('isready'); return; }
+            if (line === 'readyok') {
+              engine.ready = true;
+              if (engine.pending) { const f = engine.pending; engine.pending = null; analyse(f); }
+              return;
+            }
+            if (line.startsWith('info') && line.includes(' score ') && engine.fen) {
+              const depth = Number((line.match(/ depth (\d+)/) || [])[1]);
+              const cp = line.match(/ score cp (-?\d+)/);
+              const mate = line.match(/ score mate (-?\d+)/);
+              if (!depth || (!cp && !mate) || line.includes(' upperbound') || line.includes(' lowerbound')) return;
+              const whiteToMove = engine.fen.split(' ')[1] === 'w';
+              let v;
+              if (cp) v = Math.max(-2000, Math.min(2000, Number(cp[1]) * (whiteToMove ? 1 : -1)));
+              else v = 'M' + (Number(mate[1]) * (whiteToMove ? 1 : -1));
+              engine.eval = v;
+              engine.depth = depth;
+              if (explore && explore.chess.fen() === engine.fen) drawLive();
+            }
+          };
+          engine.worker.postMessage('uci');
+        };
+        const analyse = (fen) => {
+          engine.fen = fen;
+          engine.eval = null;
+          engine.depth = 0;
+          if (engine.failed) return;
+          startEngine();
+          if (!engine.ready) { engine.pending = fen; return; }
+          engine.worker.postMessage('stop');
+          engine.worker.postMessage('position fen ' + fen);
+          engine.worker.postMessage('go depth 16');
+        };
+        const stopEngine = () => { if (engine.worker && engine.ready) engine.worker.postMessage('stop'); engine.fen = null; };
+        // Value shown while exploring: game over states are exact, otherwise the engine's latest estimate
+        const liveEval = () => {
+          const c = explore.chess;
+          if (c.in_checkmate()) return c.turn() === 'w' ? 'M0b' : 'M0w';
+          if (c.in_draw() || c.in_stalemate()) return 0;
+          return engine.fen === c.fen() ? engine.eval : null;
+        };
+        const drawLive = () => { drawEval(); drawComment(); };
+
         // ---- Eval bar & comment ----
         const evalEl = root.querySelector('.gv-eval');
         const evalFill = root.querySelector('.gv-eval__white');
@@ -3865,8 +3943,9 @@
 
         const drawEval = () => {
           const g = current.game;
-          const ev = !explore && g.e ? readEval(g.e[ply]) : null;
+          const ev = explore ? readEval(liveEval()) : (g.e ? readEval(g.e[ply]) : null);
           evalEl.classList.toggle('unknown', !ev);
+          evalEl.title = explore && ev ? `Stockfish, depth ${engine.depth}` : '';
           evalEl.classList.toggle('flip', flipped());
           if (!ev) { evalFill.style.height = '50%'; evalLabel.textContent = ''; return; }
           evalFill.style.height = Math.max(0, Math.min(100, ev.pct)) + '%';
@@ -3893,8 +3972,12 @@
           if (explore) {
             const c = explore.chess;
             commentIcon.innerHTML = EXPLORE;
-            commentEval.hidden = true;
-            let head = 'Exploring your own line';
+            const lv = liveEval();
+            commentEval.hidden = lv == null && !engine.failed;
+            commentEval.textContent = lv == null ? (engine.failed ? 'n/a' : '') : fmtEvalLong(lv);
+            commentEval.className = 'gv-comment__eval' + (lv != null && evalIsWhite(lv) ? ' w' : '');
+            commentEval.title = lv == null ? (engine.failed ? 'Engine unavailable' : '') : `Stockfish, depth ${engine.depth}`;
+            let head = 'Your own line';
             if (c.in_checkmate()) head = 'Checkmate!';
             else if (c.in_stalemate()) head = 'Stalemate';
             else if (c.in_draw()) head = 'Draw';
@@ -3935,10 +4018,25 @@
             const [a, b] = key.split('-').map(Number);
             const [x1, y1] = centre(a);
             const [x2, y2] = centre(b);
-            const len = Math.hypot(x2 - x1, y2 - y1);
-            const ex = x2 - ((x2 - x1) / len) * 0.38;
-            const ey = y2 - ((y2 - y1) / len) * 0.38;
-            svg += `<line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" stroke="rgba(255, 170, 0, 0.85)" stroke-width="0.16" stroke-linecap="round" marker-end="url(#gv-arrowhead)"/>`;
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const style = 'fill="none" stroke="rgba(255, 170, 0, 0.85)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead)"';
+            const knight = (Math.abs(dx) === 1 && Math.abs(dy) === 2) || (Math.abs(dx) === 2 && Math.abs(dy) === 1);
+            if (knight) {
+              // L-shape: go two squares along the long side first, then turn
+              const cx = Math.abs(dx) === 2 ? x2 : x1;
+              const cy = Math.abs(dx) === 2 ? y1 : y2;
+              const sx = Math.sign(x2 - cx);
+              const sy = Math.sign(y2 - cy);
+              const ex = x2 - sx * 0.38;
+              const ey = y2 - sy * 0.38;
+              svg += `<polyline points="${x1},${y1} ${cx},${cy} ${ex},${ey}" ${style}/>`;
+            } else {
+              const len = Math.hypot(dx, dy);
+              const ex = x2 - (dx / len) * 0.38;
+              const ey = y2 - (dy / len) * 0.38;
+              svg += `<line x1="${x1}" y1="${y1}" x2="${ex}" y2="${ey}" ${style}/>`;
+            }
           });
           arrowsEl.innerHTML = svg;
         };
@@ -4026,6 +4124,7 @@
         const resume = (toPly) => {
           const base = explore ? explore.base : ply;
           explore = null;
+          stopEngine();
           go(toPly == null ? base : toPly);
         };
         resumeBtn.addEventListener('click', () => resume());
@@ -4047,6 +4146,7 @@
             explore.line.push(m);
           }
           selected = null;
+          analyse(explore.chess.fen());
           drawBoard();
           return true;
         };
@@ -4280,7 +4380,7 @@
             if (nav === 'prev') {
               explore.chess.undo();
               explore.line.pop();
-              if (!explore.line.length) resume(); else { selected = null; drawBoard(); }
+              if (!explore.line.length) resume(); else { selected = null; analyse(explore.chess.fen()); drawBoard(); }
             }
             if (nav === 'start') resume(0);
             if (nav === 'end') resume(current.moves.length);
