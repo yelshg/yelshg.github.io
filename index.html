@@ -2794,16 +2794,19 @@
     .gv-comment__icon { flex: none; width: 32px; height: 32px; }
     .gv-comment__icon:empty { display: none; }
     .gv-comment__icon svg { width: 100%; height: 100%; }
-    .gv-comment__text { flex: 1; min-width: 0; margin: 0; color: var(--lightest-slate); font-size: 16px; font-weight: 600; line-height: 1.25; }
+    .gv-comment__text { flex: 1; min-width: 0; margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: var(--lightest-slate); font-size: 16px; font-weight: 600; line-height: 1.25; }
     .gv-comment__text small { display: block; margin-top: 2px; overflow: hidden; color: var(--slate); font-size: 12.5px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
-    .gv-comment__text small.gv-sugg { color: var(--slate); }
-    .gv-comment__text .gv-best { color: #96be46; font-weight: 700; }
     .gv-comment__eval {
       flex: none; padding: 5px 9px; border-radius: 5px;
       color: var(--lightest-slate); background: var(--lightest-navy);
       font-family: "Roboto Mono", monospace !important; font-size: 13px; font-weight: 600;
     }
     .gv-comment__eval.w { color: #1d2433; background: #e9edf4; }
+    .gv-comment__acc {
+      flex: none; display: flex; flex-direction: column; align-items: center; line-height: 1.1;
+      color: var(--green); font-family: "Roboto Mono", monospace !important; font-size: 15px; font-weight: 700;
+    }
+    .gv-comment__acc small { color: var(--slate); font-family: var(--font-sans, inherit); font-size: 10px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
     .gv-resume {
       flex: none; padding: 8px 14px;
       color: var(--navy); border: 0; border-radius: 5px; background: var(--green);
@@ -3018,6 +3021,12 @@
       .gv { grid-template-columns: 1fr; gap: 28px; }
       .gv-main { width: 100%; max-width: 460px; margin: 0 auto; }
       .gv-comment { margin-left: 22px; }
+      .gv-comment { gap: 8px; padding: 8px 10px; }
+      .gv-comment.is-exploring .gv-comment__icon { display: none; }
+      .gv-comment__acc { font-size: 13.5px; }
+      .gv-comment__acc small { font-size: 9px; }
+      .gv-comment__eval { padding: 5px 7px; font-size: 12px; }
+      .gv-resume { padding: 8px 10px; font-size: 12px; }
       .gv-comment__text { font-size: 15px; }
       .gv-board-wrap, .gv-bottom { grid-template-columns: 16px minmax(0, 1fr); gap: 6px; }
       .gv-player--top { margin-left: 22px; }
@@ -3253,8 +3262,9 @@
           <div class="gv-comment" aria-live="polite">
             <span class="gv-comment__icon"></span>
             <p class="gv-comment__text"></p>
+            <span class="gv-comment__acc" hidden title="Accuracy of the moves in your own line"></span>
             <span class="gv-comment__eval"></span>
-            <button class="gv-resume" type="button" hidden>&#x21A9;&#xFE0E; Resume game</button>
+            <button class="gv-resume" type="button" hidden aria-label="Resume game" title="Back to the game">&#x21A9;&#xFE0E; Resume</button>
           </div>
           <div class="gv-player gv-player--top"><span class="gv-name"></span><span class="gv-acc"></span></div>
           <div class="gv-board-wrap">
@@ -3264,6 +3274,9 @@
                 <defs>
                   <marker id="gv-arrowhead" markerWidth="3.2" markerHeight="3.2" refX="1.6" refY="1.6" orient="auto" markerUnits="strokeWidth">
                     <path d="M0,0 L3.2,1.6 L0,3.2 z" fill="rgba(255, 170, 0, 0.85)"/>
+                  </marker>
+                  <marker id="gv-arrowhead-next" markerWidth="3.2" markerHeight="3.2" refX="1.6" refY="1.6" orient="auto" markerUnits="strokeWidth">
+                    <path d="M0,0 L3.2,1.6 L0,3.2 z" fill="rgba(90, 160, 235, 0.9)"/>
                   </marker>
                   <marker id="gv-arrowhead-best" markerWidth="3.2" markerHeight="3.2" refX="1.6" refY="1.6" orient="auto" markerUnits="strokeWidth">
                     <path d="M0,0 L3.2,1.6 L0,3.2 z" fill="rgba(150, 190, 70, 0.9)"/>
@@ -3287,7 +3300,7 @@
             <button type="button" data-nav="next" aria-label="Next move">&#x25B6;</button>
             <button type="button" data-nav="end" aria-label="Last move">&#x23ED;</button>
           </div>
-          <p class="gv-hint">Move any piece to explore your own line. Stockfish suggests the best reply with a green arrow. Press Resume game to go back. On a computer, right-click and drag to draw arrows, or drag the corner button to resize the board.</p>
+          <p class="gv-hint">Move any piece to explore your own line. A green arrow shows the best move you could have played instead, and a blue arrow the best move for whoever plays next. Press Resume game to go back. On a computer, right-click and drag to draw arrows, or drag the corner button to resize the board.</p>
           <p class="gv-meta"></p>
           <div class="gv-summary" aria-label="Move quality"></div>
         </div>
@@ -3863,7 +3876,23 @@
 
         // ---- Live engine (Stockfish in a background worker, loaded only when someone explores) ----
         const ENGINE_URL = 'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js';
-        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, best: null, pending: null };
+        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, best: null, next: null, cache: {}, pending: false, queue: [], job: null, running: 0 };
+        // Position before the last move of the explored line (whose best move we show)
+        const prevFen = () => {
+          if (!explore || !explore.line.length) return null;
+          const t = new Rules(current.fens[explore.base]);
+          explore.line.slice(0, -1).forEach((m) => t.move(m.san));
+          return t.fen();
+        };
+        const runNext = () => {
+          const job = engine.queue.shift();
+          if (!job) { engine.job = null; return; }
+          if (engine.running > 0) engine.worker.postMessage('stop');
+          engine.job = job;
+          engine.running++;
+          engine.worker.postMessage('position fen ' + job.fen);
+          engine.worker.postMessage('go depth ' + job.depth);
+        };
         const startEngine = () => {
           if (engine.worker || engine.failed) return;
           try {
@@ -3876,40 +3905,69 @@
             if (line === 'uciok') { engine.worker.postMessage('isready'); return; }
             if (line === 'readyok') {
               engine.ready = true;
-              if (engine.pending) { const f = engine.pending; engine.pending = null; analyse(f); }
+              if (engine.pending) { engine.pending = false; if (explore) analyse(); }
               return;
             }
-            if (line.startsWith('info') && line.includes(' score ') && engine.fen) {
-              const depth = Number((line.match(/ depth (\d+)/) || [])[1]);
-              const cp = line.match(/ score cp (-?\d+)/);
-              const mate = line.match(/ score mate (-?\d+)/);
-              if (!depth || (!cp && !mate) || line.includes(' upperbound') || line.includes(' lowerbound')) return;
-              const whiteToMove = engine.fen.split(' ')[1] === 'w';
-              let v;
-              if (cp) v = Math.max(-2000, Math.min(2000, Number(cp[1]) * (whiteToMove ? 1 : -1)));
-              else v = 'M' + (Number(mate[1]) * (whiteToMove ? 1 : -1));
+            const job = engine.job;
+            if (line.startsWith('bestmove')) {
+              engine.running = Math.max(0, engine.running - 1);
+              if (engine.running === 0 && job) {
+                const bm = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)/);
+                if (bm) engine[job.kind === 'best' ? 'best' : 'next'] = { fen: job.fen, uci: bm[1] };
+                if (explore) drawLive();
+                runNext();
+              }
+              return;
+            }
+            // Ignore output from a search that was just stopped
+            if (engine.running !== 1 || !job) return;
+            if (!line.startsWith('info') || !line.includes(' score ')) return;
+            const depth = Number((line.match(/ depth (\d+)/) || [])[1]);
+            const cp = line.match(/ score cp (-?\d+)/);
+            const mate = line.match(/ score mate (-?\d+)/);
+            if (!depth || (!cp && !mate) || line.includes(' upperbound') || line.includes(' lowerbound')) return;
+            const whiteToMove = job.fen.split(' ')[1] === 'w';
+            let v;
+            if (cp) v = Math.max(-2000, Math.min(2000, Number(cp[1]) * (whiteToMove ? 1 : -1)));
+            else v = 'M' + (Number(mate[1]) * (whiteToMove ? 1 : -1));
+            engine.cache[job.fen] = v;
+            const pv = line.match(/ pv ([a-h][1-8][a-h][1-8][qrbn]?)/);
+            if (job.kind === 'best') {
+              if (pv) engine.best = { fen: job.fen, uci: pv[1] };
+            } else {
               engine.eval = v;
               engine.depth = depth;
-              const pv = line.match(/ pv ([a-h][1-8][a-h][1-8][qrbn]?)/);
-              if (pv) engine.best = pv[1];
-              if (explore && explore.chess.fen() === engine.fen) drawLive();
+              if (pv) engine.next = { fen: job.fen, uci: pv[1] };
             }
+            if (explore) drawLive();
           };
           engine.worker.postMessage('uci');
         };
-        const analyse = (fen) => {
+        // Analyse the explored line: first the best move before the last move, then the current position's eval
+        const analyse = () => {
+          const fen = explore.chess.fen();
+          const before = prevFen();
           engine.fen = fen;
           engine.eval = null;
           engine.depth = 0;
-          engine.best = null;
+          if (engine.best && engine.best.fen !== before) engine.best = null;
+          if (engine.next && engine.next.fen !== fen) engine.next = null;
           if (engine.failed) return;
           startEngine();
-          if (!engine.ready) { engine.pending = fen; return; }
-          engine.worker.postMessage('stop');
-          engine.worker.postMessage('position fen ' + fen);
-          engine.worker.postMessage('go depth 16');
+          if (!engine.ready) { engine.pending = true; return; }
+          engine.queue = [];
+          if (before && !engine.best) engine.queue.push({ kind: 'best', fen: before, depth: 14 });
+          if (!explore.chess.game_over()) engine.queue.push({ kind: 'eval', fen, depth: 16 });
+          if (engine.queue.length) runNext();
+          else if (engine.running > 0) { engine.job = null; engine.worker.postMessage('stop'); }
         };
-        const stopEngine = () => { if (engine.worker && engine.ready) engine.worker.postMessage('stop'); engine.fen = null; };
+        const stopEngine = () => {
+          engine.queue = [];
+          engine.fen = null;
+          engine.best = null;
+          engine.next = null;
+          if (engine.worker && engine.ready && engine.running > 0) engine.worker.postMessage('stop');
+        };
         // Value shown while exploring: game over states are exact, otherwise the engine's latest estimate
         const liveEval = () => {
           const c = explore.chess;
@@ -3917,15 +3975,50 @@
           if (c.in_draw() || c.in_stalemate()) return 0;
           return engine.fen === c.fen() ? engine.eval : null;
         };
-        // Engine's best move in the explored position, as { from, to, san }
-        const bestMove = () => {
-          if (!explore || !engine.best || engine.fen !== explore.chess.fen()) return null;
-          const c = explore.chess;
-          if (c.game_over()) return null;
-          const u = engine.best;
-          const t = new Rules(c.fen());
-          const m = t.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || 'q' });
+        // What the player who just moved should have played, as { from, to, san }
+        const toArrow = (rec, fen) => {
+          if (!rec || !fen || rec.fen !== fen) return null;
+          const u = rec.uci;
+          const m = new Rules(fen).move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] || 'q' });
           return m ? { from: sqIndex(u.slice(0, 2)), to: sqIndex(u.slice(2, 4)), san: m.san } : null;
+        };
+        const bestMove = () => (explore ? toArrow(engine.best, prevFen()) : null);
+        // Best move for the player whose turn it is now
+        const nextMove = () => (explore && !explore.chess.game_over() ? toArrow(engine.next, explore.chess.fen()) : null);
+
+        // Live accuracy of the explored line (Lichess-style: based on how much winning chance each move gives up)
+        const winPct = (v, side) => {
+          let w;
+          if (v === 'M0w') w = 100;
+          else if (v === 'M0b') w = 0;
+          else {
+            const cp = typeof v === 'number' ? v : (Number(v.slice(1)) > 0 ? 1000 : -1000);
+            w = 50 + 50 * (2 / (1 + Math.exp(-0.00368208 * cp)) - 1);
+          }
+          return side === 'w' ? w : 100 - w;
+        };
+        const lineAccuracy = () => {
+          if (!explore || !explore.line.length) return null;
+          const t = new Rules(current.fens[explore.base]);
+          const g = current.game;
+          let prev = engine.cache[t.fen()];
+          if (prev == null && g.e) prev = g.e[explore.base];
+          let sum = 0, n = 0;
+          explore.line.forEach((m) => {
+            const side = t.turn();
+            t.move(m.san);
+            let now;
+            if (t.in_checkmate()) now = t.turn() === 'w' ? 'M0b' : 'M0w';
+            else if (t.in_draw() || t.in_stalemate()) now = 0;
+            else now = engine.cache[t.fen()];
+            if (prev != null && now != null) {
+              const loss = Math.max(0, winPct(prev, side) - winPct(now, side));
+              sum += Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * loss) - 3.1669 + 1));
+              n++;
+            }
+            prev = now;
+          });
+          return n ? sum / n : null;
         };
         const drawLive = () => { drawEval(); drawComment(); drawArrows(); };
 
@@ -3936,6 +4029,7 @@
         const commentIcon = root.querySelector('.gv-comment__icon');
         const commentText = root.querySelector('.gv-comment__text');
         const commentEval = root.querySelector('.gv-comment__eval');
+        const commentAcc = root.querySelector('.gv-comment__acc');
         const readEval = (v) => {
           if (v == null) return null;
           if (typeof v === 'number') {
@@ -3988,6 +4082,8 @@
         const drawComment = () => {
           const g = current.game;
           resumeBtn.hidden = !explore;
+          commentText.parentNode.classList.toggle('is-exploring', !!explore);
+          if (!explore) commentAcc.hidden = true;
           if (explore) {
             const c = explore.chess;
             commentIcon.innerHTML = EXPLORE;
@@ -4001,9 +4097,10 @@
             else if (c.in_stalemate()) head = 'Stalemate';
             else if (c.in_draw()) head = 'Draw';
             else if (c.in_check()) head = 'Check!';
-            const bm = bestMove();
-            const sugg = c.game_over() ? '' : bm ? `Best move: <b class="gv-best">${esc(bm.san)}</b>` : (engine.failed ? '' : 'Finding the best move…');
-            commentText.innerHTML = `${head}<small>${esc(lineText())}</small>` + (sugg ? `<small class="gv-sugg">${sugg}</small>` : '');
+            commentText.innerHTML = `${head}<small>${esc(lineText())}</small>`;
+            const acc = lineAccuracy();
+            commentAcc.hidden = acc == null;
+            if (acc != null) commentAcc.innerHTML = `${acc.toFixed(1)}%<small>Accuracy</small>`;
             return;
           }
           const v = g.e ? g.e[ply] : null;
@@ -4038,13 +4135,17 @@
           const keys = [...arrows].map((k) => [k, false]);
           const bm = bestMove();
           if (bm && !arrows.has(bm.from + '-' + bm.to)) keys.unshift([bm.from + '-' + bm.to, true]);
+          const nm = nextMove();
+          if (nm && !arrows.has(nm.from + '-' + nm.to)) keys.unshift([nm.from + '-' + nm.to, 'next']);
           keys.forEach(([key, isBest]) => {
             const [a, b] = key.split('-').map(Number);
             const [x1, y1] = centre(a);
             const [x2, y2] = centre(b);
             const dx = x2 - x1;
             const dy = y2 - y1;
-            const style = isBest
+            const style = isBest === 'next'
+              ? 'fill="none" stroke="rgba(90, 160, 235, 0.9)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead-next)"'
+              : isBest
               ? 'fill="none" stroke="rgba(150, 190, 70, 0.9)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead-best)"'
               : 'fill="none" stroke="rgba(255, 170, 0, 0.85)" stroke-width="0.16" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#gv-arrowhead)"';
             const knight = (Math.abs(dx) === 1 && Math.abs(dy) === 2) || (Math.abs(dx) === 2 && Math.abs(dy) === 1);
@@ -4153,11 +4254,54 @@
         };
 
         const stop = () => { clearInterval(timer); timer = null; playBtn.innerHTML = '&#x25B6;&#xFE0E; Play'; };
-        const go = (p) => {
+        // Slide pieces from where they were to where they are now (one step through the game)
+        const MOVE_MS = 320;
+        const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const animatePieces = (before, after) => {
+          if (reduceMotion) return;
+          const size = boardEl.clientWidth / 8;
+          const flip = flipped();
+          const xy = (i) => {
+            const file = i % 8, rank = Math.floor(i / 8);
+            return [(flip ? 7 - file : file) * size, (flip ? rank : 7 - rank) * size];
+          };
+          const gone = [];
+          for (let i = 0; i < 64; i++) if (before[i] && before[i] !== after[i]) gone.push(i);
+          for (let i = 0; i < 64; i++) {
+            if (!after[i] || after[i] === before[i]) continue;
+            // the piece that arrived here: take the nearest square it left
+            let from = -1, best = Infinity;
+            gone.forEach((g) => {
+              if (before[g] !== after[i]) return;
+              const d = Math.abs((g % 8) - (i % 8)) + Math.abs(Math.floor(g / 8) - Math.floor(i / 8));
+              if (d < best) { best = d; from = g; }
+            });
+            const sq = boardEl.querySelector(`.gv-sq[data-sq="${i}"]`);
+            if (!sq) continue;
+            const pc = sq.querySelector('.pc');
+            if (from >= 0 && pc) {
+              gone.splice(gone.indexOf(from), 1);
+              const [x1, y1] = xy(from), [x2, y2] = xy(i);
+              sq.style.zIndex = 3;
+              const anim = pc.animate(
+                [{ transform: `translate(${x1 - x2}px, ${y1 - y2}px)` }, { transform: 'translate(0, 0)' }],
+                { duration: MOVE_MS, easing: 'cubic-bezier(0.33, 0, 0.2, 1)' }
+              );
+              anim.onfinish = anim.oncancel = () => { sq.style.zIndex = ''; };
+            } else if (pc) {
+              pc.animate([{ opacity: 0 }, { opacity: 1 }], { duration: MOVE_MS });
+            }
+            sq.querySelectorAll('.gv-k').forEach((k) => k.animate([{ opacity: 0 }, { opacity: 0, offset: 0.7 }, { opacity: 1 }], { duration: MOVE_MS + 120 }));
+          }
+        };
+        const go = (p, animate = true) => {
+          const from = ply;
+          const before = !explore && current ? toBoard(current.fens[ply]) : null;
           ply = Math.max(0, Math.min(current.moves.length, p));
           selected = null;
           clearAnnotations();
           drawBoard();
+          if (animate && before && Math.abs(ply - from) === 1) animatePieces(before, toBoard(current.fens[ply]));
         };
         const resume = (toPly) => {
           const base = explore ? explore.base : ply;
@@ -4167,7 +4311,7 @@
         };
         resumeBtn.addEventListener('click', () => resume());
 
-        const tryMove = (from, to) => {
+        const tryMove = (from, to, dragged) => {
           const chess = explore ? explore.chess : new Rules(current.fens[ply]);
           const m = chess.move({ from: sqName(from), to: sqName(to), promotion: 'q' });
           if (!m) return false;
@@ -4176,7 +4320,7 @@
           if (!explore) {
             const real = current.moves[ply];
             if (real && real.slice(0, 4) === m.from + m.to && (real[4] || 'q') === (m.promotion || 'q')) {
-              go(ply + 1); // matches the game: just continue the game
+              go(ply + 1, !dragged); // matches the game: just continue the game
               return true;
             }
             explore = { base: ply, chess, line: [m] };
@@ -4184,7 +4328,7 @@
             explore.line.push(m);
           }
           selected = null;
-          analyse(explore.chess.fen());
+          analyse();
           drawBoard();
           return true;
         };
@@ -4248,7 +4392,7 @@
           if (d.ghost) d.ghost.remove();
           if (d.moved) {
             const to = squareAt(e.clientX, e.clientY);
-            if (to != null && to !== d.from && tryMove(d.from, to)) return;
+            if (to != null && to !== d.from && tryMove(d.from, to, true)) return;
             if (to !== d.from) selected = null;
           }
           drawBoard();
@@ -4418,7 +4562,7 @@
             if (nav === 'prev') {
               explore.chess.undo();
               explore.line.pop();
-              if (!explore.line.length) resume(); else { selected = null; analyse(explore.chess.fen()); drawBoard(); }
+              if (!explore.line.length) resume(); else { selected = null; analyse(); drawBoard(); }
             }
             if (nav === 'start') resume(0);
             if (nav === 'end') resume(current.moves.length);
