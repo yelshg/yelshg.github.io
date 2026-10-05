@@ -2806,6 +2806,27 @@
       .gh-n, .gh-d { font-size: 12px; }
     }
 
+
+    /* Back to top: appears once you reach "Currently Working On" */
+    .to-top {
+      position: fixed; top: 112px; left: 50%; z-index: 1200;
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 16px;
+      color: var(--green); border: 1px solid var(--green); border-radius: 999px;
+      background: rgba(10, 25, 47, 0.92); box-shadow: 0 10px 30px -10px var(--navy-shadow);
+      font-family: "Roboto Mono", monospace !important; font-size: 13px; cursor: pointer;
+      opacity: 0; visibility: hidden; transform: translate(-50%, -12px);
+      transition: opacity 220ms ease, transform 220ms ease, visibility 220ms, background 150ms ease;
+      -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+    }
+    .to-top.is-shown { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
+    body.menu-open .to-top { opacity: 0; visibility: hidden; }
+    .to-top:hover, .to-top:focus-visible { background: rgba(100, 255, 218, 0.12); outline: none; }
+    .to-top svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    @media (max-width: 820px) { .to-top { top: 94px; padding: 8px 14px; font-size: 12.5px; } }
+    @media (hover: hover) and (pointer: fine) and (min-width: 821px) { .to-top { top: 18px; } }
+    @media (prefers-reduced-motion: reduce) { .to-top { transition: none; } }
+
     /* Header appears only on hover (desktop with a mouse) */
     .header-hotzone { display: none; }
     @media (hover: hover) and (pointer: fine) and (min-width: 821px) {
@@ -2842,6 +2863,7 @@
   <a class="skip-link" href="#main">Skip to content</a>
 
   <div class="header-hotzone" aria-hidden="true"></div>
+  <button class="to-top" type="button" aria-label="Back to top"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>Back to Top</button>
   <header class="site-header">
     <a class="brand" href="#main" aria-label="Yelsh Gebreselassie home">YG</a>
     <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
@@ -3469,6 +3491,27 @@
       loadForHash();
       loadStats();
 
+
+      /* ---------- Back to top ---------- */
+      (() => {
+        const btn = document.querySelector('.to-top');
+        const mark = document.getElementById('projects');
+        if (!btn || !mark) return;
+        let shown = false;
+        const update = () => {
+          const show = mark.getBoundingClientRect().top <= window.innerHeight * 0.5;
+          if (show !== shown) { shown = show; btn.classList.toggle('is-shown', show); btn.tabIndex = show ? 0 : -1; }
+        };
+        btn.tabIndex = -1;
+        window.addEventListener('scroll', update, { passive: true });
+        window.addEventListener('resize', update);
+        update();
+        btn.addEventListener('click', () => {
+          const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          window.scrollTo({ top: 0, behavior: still ? 'auto' : 'smooth' });
+          if (location.hash && location.hash !== '#main') history.replaceState(null, '', location.pathname + location.search);
+        });
+      })();
 
       /* ---------- Chess game history ---------- */
       (() => {
