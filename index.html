@@ -3997,28 +3997,83 @@
           }
           return side === 'w' ? w : 100 - w;
         };
-        const lineAccuracy = () => {
-          if (!explore || !explore.line.length) return null;
-          const t = new Rules(current.fens[explore.base]);
+        // Live accuracy for each side up to the position on the board (game moves, then your own line).
+        // Same method as Lichess: each move scores 0-100 by how much winning chance it gave up,
+        // then a volatility-weighted mean and a harmonic mean are averaged.
+        const liveAccuracy = () => {
           const g = current.game;
-          let prev = engine.cache[t.fen()];
-          if (prev == null && g.e) prev = g.e[explore.base];
-          let sum = 0, n = 0;
-          explore.line.forEach((m) => {
-            const side = t.turn();
-            t.move(m.san);
-            let now;
-            if (t.in_checkmate()) now = t.turn() === 'w' ? 'M0b' : 'M0w';
-            else if (t.in_draw() || t.in_stalemate()) now = 0;
-            else now = engine.cache[t.fen()];
-            if (prev != null && now != null) {
-              const loss = Math.max(0, winPct(prev, side) - winPct(now, side));
-              sum += Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.04354 * loss) - 3.1669 + 1));
-              n++;
+          if (!g.e) return null;
+          const upto = explore ? explore.base : ply;
+          const vals = [];
+          const sides = [];
+          for (let i = 0; i <= upto; i++) {
+            // where your own line branches off, prefer the live engine's value so both sides of the move use the same engine
+            const ev = explore && i === upto && engine.cache[current.fens[i]] != null ? engine.cache[current.fens[i]] : g.e[i];
+            if (ev == null) break;
+            vals.push(winPct(ev, 'w'));
+            if (i < upto) sides.push(current.fens[i].split(' ')[1]);
+          }
+          if (vals.length !== upto + 1) sides.length = Math.max(0, vals.length - 1);
+          else if (explore) {
+            const t = new Rules(current.fens[explore.base]);
+            for (const m of explore.line) {
+              const side = t.turn();
+              t.move(m.san);
+              let v;
+              if (t.in_checkmate()) v = t.turn() === 'w' ? 'M0b' : 'M0w';
+              else if (t.in_draw() || t.in_stalemate()) v = 0;
+              else v = engine.cache[t.fen()];
+              if (v == null) break; // still being analysed
+              vals.push(winPct(v, 'w'));
+              sides.push(side);
             }
-            prev = now;
+          }
+          const n = sides.length;
+          const out = { w: null, b: null };
+          if (!n) return out;
+          const ws = Math.max(2, Math.min(8, Math.floor(n / 10)));
+          let weights = new Array(n).fill(1);
+          if (vals.length >= ws) {
+            const wins = [];
+            for (let k = 0; k < ws - 2; k++) wins.push(vals.slice(0, ws));
+            for (let k = 0; k + ws <= vals.length; k++) wins.push(vals.slice(k, k + ws));
+            weights = wins.slice(0, n).map((w) => {
+              const mean = w.reduce((a, b) => a + b, 0) / w.length;
+              const sd = Math.sqrt(w.reduce((a, b) => a + (b - mean) ** 2, 0) / w.length);
+              return Math.max(0.5, Math.min(12, sd));
+            });
+          }
+          ['w', 'b'].forEach((c) => {
+            let sw = 0, swa = 0, inv = 0, k = 0;
+            for (let i = 0; i < n; i++) {
+              if (sides[i] !== c) continue;
+              const before = c === 'w' ? vals[i] : 100 - vals[i];
+              const after = c === 'w' ? vals[i + 1] : 100 - vals[i + 1];
+              const loss = Math.max(0, before - after);
+              // 0.065 (Lichess uses 0.0435) is tuned so results land close to Chess.com's accuracy on these games
+              const acc = Math.max(0, Math.min(100, 103.1668 * Math.exp(-0.065 * loss) - 3.1669 + 1));
+              swa += acc * weights[i]; sw += weights[i];
+              inv += 1 / Math.max(acc, 1); k++;
+            }
+            if (k) out[c] = (swa / sw + k / inv) / 2;
           });
-          return n ? sum / n : null;
+          return out;
+        };
+        const drawAccuracy = () => {
+          const g = current.game;
+          const acc = liveAccuracy();
+          const me = g.c;
+          const opp = me === 'w' ? 'b' : 'w';
+          const fmt = (v) => (v == null ? '–' : v.toFixed(1));
+          const tip = 'Live accuracy up to this move, from Stockfish';
+          const bottom = root.querySelector('.gv-player--bottom .gv-acc');
+          const top = root.querySelector('.gv-player--top .gv-acc');
+          bottom.innerHTML = `Accuracy <b>${fmt(acc && acc[me])}</b>`;
+          top.innerHTML = `Accuracy <b>${fmt(acc && acc[opp])}</b>`;
+          bottom.title = top.title = tip;
+          commentAcc.hidden = !acc;
+          commentAcc.title = tip;
+          commentAcc.innerHTML = `${acc && acc[me] != null ? acc[me].toFixed(1) + '%' : '–'}<small>My accuracy</small>`;
         };
         const drawLive = () => { drawEval(); drawComment(); drawArrows(); };
 
@@ -4083,7 +4138,7 @@
           const g = current.game;
           resumeBtn.hidden = !explore;
           commentText.parentNode.classList.toggle('is-exploring', !!explore);
-          if (!explore) commentAcc.hidden = true;
+          drawAccuracy();
           if (explore) {
             const c = explore.chess;
             commentIcon.innerHTML = EXPLORE;
@@ -4098,9 +4153,6 @@
             else if (c.in_draw()) head = 'Draw';
             else if (c.in_check()) head = 'Check!';
             commentText.innerHTML = `${head}<small>${esc(lineText())}</small>`;
-            const acc = lineAccuracy();
-            commentAcc.hidden = acc == null;
-            if (acc != null) commentAcc.innerHTML = `${acc.toFixed(1)}%<small>Accuracy</small>`;
             return;
           }
           const v = g.e ? g.e[ply] : null;
@@ -4485,9 +4537,9 @@
           const bottom = root.querySelector('.gv-player--bottom');
           const top = root.querySelector('.gv-player--top');
           bottom.querySelector('.gv-name').textContent = `${ME} (${g.r})`;
-          bottom.querySelector('.gv-acc').innerHTML = `Accuracy <b>${g.a.toFixed(1)}</b>`;
+
           top.querySelector('.gv-name').textContent = `${g.o} (${g.or}) · bot`;
-          top.querySelector('.gv-acc').innerHTML = g.oa == null ? '' : `Accuracy <b>${g.oa.toFixed(1)}</b>`;
+
           metaEl.innerHTML = `<span class="gv-badge ${g.res}">${g.res === 'W' ? 'Won' : 'Lost'}</span> by ${esc(g.t)} · <strong>${esc(g.op)}</strong> · ${Math.ceil(moves.length / 2)} moves · ${fmtDate(g.d)}`;
           const mk = (i) => (g.k && LIST_MARKS.includes(g.k[i]) ? markHtml(g.k[i]) : '');
           const startBlack = (g.f || START).split(' ')[1] === 'b';
