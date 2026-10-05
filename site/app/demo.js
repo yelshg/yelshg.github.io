@@ -168,8 +168,10 @@
       let qty = Math.floor(o.qty * 1e6) / 1e6, heldBefore = 0;
       if (o.side === "sell") {
         heldBefore = held(o.account, o.symbol);
-        qty = Math.min(qty, Math.floor(held(o.account, o.symbol) * 1e6) / 1e6);
-        if (qty <= 0) { reject(o, `Sell ${o.symbol}: no shares held.`); continue; }
+        // No partial fills: a sell for more shares than the account holds is rejected whole (rounding aside).
+        if (heldBefore <= 1e-6) { reject(o, `Sell ${o.symbol}: no shares held, so the order was rejected.`); continue; }
+        if (qty > heldBefore + 1e-6) { reject(o, `Sell ${qty} ${o.symbol}: only ${+heldBefore.toFixed(6)} shares are held, so the order was rejected.`); continue; }
+        qty = Math.min(qty, Math.floor(heldBefore * 1e6) / 1e6);
         // Lots sold: the ones the rebalance chose (shown under the order's tax lots), then oldest first (FIFO)
         // or highest cost first (HIFO / lowest tax) for anything left.
         const lots = (a.lots[o.symbol] || []).slice().sort((x, y) => (method === "fifo" ? x.acquired.localeCompare(y.acquired) : y.cost - x.cost));
@@ -186,9 +188,8 @@
         if (!a.lots[o.symbol].length) delete a.lots[o.symbol];
         a.cash = +(a.cash + qty * px).toFixed(6);
       } else {
-        if (qty * px > a.cash + 0.005) { const fit = Math.floor((a.cash / px) * 1e6) / 1e6;
-          if (fit <= 0) { reject(o, `Buy ${o.symbol}: not enough cash.`); continue; }
-          skipped.push(`Buy ${o.symbol}: reduced to ${fit} shares to fit the cash available.`); qty = fit; }
+        // No partial fills: a buy the account's cash can't cover is rejected whole.
+        if (qty * px > a.cash + 0.005) { reject(o, `Buy ${o.symbol}: costs ${U.plainMoney(qty * px)} but the account has ${U.plainMoney(Math.max(0, a.cash))} of cash, so the order was rejected.`); continue; }
         a.cash = +(a.cash - qty * px).toFixed(6);
         (a.lots[o.symbol] = a.lots[o.symbol] || []).push({ qty, cost: px, acquired: now.slice(0, 10) });
       }

@@ -217,6 +217,7 @@ ${tip(`Open <b>Cash (uninvested)</b> the same way (search "cash"). It's always t
 <h2>Rebalance Results</h2>
 <p>Every result, newest first, with its portfolio, type, number of orders and status:
 <b>proposed</b> (not yet approved), <b>approved</b> (orders on the blotter), <b>submitted</b> (all its orders closed) or <b>refused</b>.
+A refused result can be brought back with <b>Decision &#9662; &gt; Re-enable Result</b>, which makes it proposed and editable again.
 Filter by portfolio or status, and delete results you don't need. The 60 most recent results are kept.</p>
 ${note(`A rebalance uses the latest prices and your current settings when it's created. Results keep those; changing a setting later
 doesn't change an existing result. Run a new rebalance to see the effect.`)}` },
@@ -299,7 +300,9 @@ filled yet, its open orders come off the blotter and the result goes back to pro
 <ul>
   <li>Orders fill at the <b>latest real closing price</b> (the date in the top bar), sells first so their cash funds the buys.</li>
   <li>Sells take the tax lots the rebalance chose.</li>
-  <li>A buy is reduced if the account doesn't have enough cash; an order that can't fill at all is listed and removed from Open.</li>
+  <li><b>No partial fills:</b> each order fills in full or not at all. A buy the account's cash can't cover, or a sell for more shares than
+    the account holds, is rejected whole; you'll see the reason, and it's removed from Open.</li>
+  <li>Nothing fills until you submit it: approving only puts orders on the blotter.</li>
   <li>Sale proceeds are unsettled until the next business day (see ${a("cash", "settlement")}).</li>
   <li>The first fills for a portfolio set its report dates (see ${a("report-dates", "Report dates")}).</li>
 </ul>

@@ -210,7 +210,7 @@
         ${rows ? `<div class="scroll"><table><thead><tr class="band-row"><th colspan="3"></th><th colspan="5">Current position</th><th colspan="3" class="band-amber">Orders</th><th colspan="3">Adjusted position (est.)</th></tr>
           <tr>${head}</tr></thead><tbody>${rows}</tbody></table></div>`
           : '<p class="empty">No positions or orders.</p>'}
-        <p class="small muted">${locked() ? `This result is ${esc(r.status)}; re-open it to edit orders.` : "Edit an order's type, dollar amount or shares; every panel recalculates. Click Save at the top to keep your edits."}
+        <p class="small muted">${locked() ? (r.status === "refused" ? "This result is refused; choose Decision &gt; Re-enable Result to edit its orders." : `This result is ${esc(r.status)}, so its orders can't be edited.`) : "Edit an order's type, dollar amount or shares; every panel recalculates. Click Save at the top to keep your edits."}
           Click a column heading to sort; click again to reverse. Click &#9656; next to an account to see the position's tax lots.
           LT / ST / Mixed: whether a sell's gain is long-term, short-term or both (lots without a buy date count as short-term). * estimated from average cost.</p>`;
     }
@@ -370,7 +370,7 @@
           <div class="menu-wrap"><button class="btn primary" type="button" data-r="submit-menu" aria-haspopup="menu" aria-expanded="false">${locked() ? "Decision" : "Approve orders"} &#9662;</button>
             <div class="menu" role="menu" hidden>${r.status === "approved" && bl.open ? `<button role="menuitem" type="button" data-r="recall">Recall orders (${bl.open} open)</button>`
               : locked() && (r.paper || r.blotter) ? `<button role="menuitem" type="button" disabled>Closed in the demo: run a new rebalance to trade again</button>`
-              : locked() ? `<button role="menuitem" type="button" data-r="reopen">Re-open this result</button>`
+              : locked() ? `<button role="menuitem" type="button" data-r="reopen">Re-enable Result</button>`
               : `<button role="menuitem" type="button" data-r="submit">Approve orders</button><button role="menuitem" type="button" data-r="refuse">Refuse order</button>`}</div></div>
           <button class="linkbtn" type="button" data-r="expand">Expand all</button><span>/</span><button class="linkbtn" type="button" data-r="collapse">Collapse all</button></div>
         <div class="top${ui.drawer ? " drawer-open" : ""}">
@@ -488,7 +488,7 @@
       if (a === "expand" || a === "collapse") { ui.closed = a === "collapse" ? new Set(["summary", "entry", "cash", "orders", "alloc", "chart", "messages"]) : new Set(); return render(); }
       if (a === "submit-menu") { menu.hidden = !menu.hidden; t.setAttribute("aria-expanded", String(!menu.hidden)); if (!menu.hidden) menu.querySelector("button").focus(); return; }
       if (a === "submit") return submitFlow();
-      if (a === "refuse") return U.modal({ title: "Refuse order", body: "<p>Mark this rebalance as refused? Its orders won't be used. You can re-open it later.</p>",
+      if (a === "refuse") return U.modal({ title: "Refuse order", body: "<p>Mark this rebalance as refused? Its orders won't be used. You can re-enable it later (Decision &gt; Re-enable Result).</p>",
         actions: [{ label: "Cancel" }, { label: "Refuse order", danger: true, onClick: () => decide("refused") }] });
       // Recall orders: take this result's open orders back off the blotter. With nothing filled it returns to proposed
       // (editable, ready to approve again); otherwise the filled orders stand and the result closes.

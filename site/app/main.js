@@ -366,7 +366,7 @@
           const { filled, notes } = App.submitOrders(ids);
           App.state.ordSel = new Set();
           U.toast(`Filled ${filled} order${filled === 1 ? "" : "s"}`);
-          if (notes.length) U.modal({ title: "Some orders didn't fill as entered", body: `<ul class="notes">${notes.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>`, actions: [{ label: "Close" }] });
+          if (notes.length) U.modal({ title: "Some orders were rejected", body: `<ul class="notes">${notes.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>`, actions: [{ label: "Close" }] });
           rerender();
         } }] });
     },
