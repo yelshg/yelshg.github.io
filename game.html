@@ -343,8 +343,9 @@
     .gv-moves-slot--desktop .gv-moves button:hover { color: var(--lightest-slate); background: rgba(255, 255, 255, 0.07); }
     .gv-moves-slot--desktop .gv-moves button.on { color: var(--lightest-slate); background: rgba(255, 255, 255, 0.16); }
     .gv-moves button.on .gv-mk { box-shadow: none; }
+    .gv-summary[hidden] { display: none !important; }
     .gv-panel .gv-summary { margin: 0; padding: 12px 16px; border-top: 1px solid var(--lightest-navy); }
-    .gv-panel .gv-controls { margin: 0; padding: 0 16px 12px; }
+    .gv-panel .gv-controls { margin: 0; padding: 12px 16px; border-top: 1px solid var(--lightest-navy); }
     .gv-controls button { color: var(--light-slate); border-color: transparent; background: #3c3a37; font-size: 16px; }
     .gv-controls button:hover, .gv-controls button:focus-visible { color: var(--lightest-slate); border-color: transparent; background: #4a4845; }
     .gv-panel .gv-meta { margin: 0; padding: 0 16px; font-size: 13px; }
@@ -405,7 +406,7 @@
       <p class="gv-tab">Moves</p>
       <div class="gv-head"><span>Starting Position</span><span>Stockfish</span></div>
       <div class="gv-moves-slot gv-moves-slot--desktop"><ol class="gv-moves" aria-label="Moves"></ol></div>
-      <div class="gv-summary" aria-label="Move quality"></div>
+<div class="gv-summary" hidden></div>
       <div class="gv-controls" role="group" aria-label="Move controls">
         <button type="button" data-nav="start" aria-label="First move">&#x23EE;&#xFE0E;</button>
         <button type="button" data-nav="prev" aria-label="Previous move">&#x276E;</button>
@@ -965,15 +966,20 @@
 
           movesEl.querySelectorAll('button').forEach((b) => b.classList.toggle('on', !explore && Number(b.dataset.ply) === ply));
           const on = movesEl.querySelector('button.on');
+          // In the side panel the list scrolls inside its panel; on phones it scrolls sideways
+          const vScroll = movesEl.parentElement.classList.contains('gv-moves-slot--desktop') ? movesEl.parentElement : movesEl;
           if (on) {
-            const box = movesEl.getBoundingClientRect();
-            const r = on.getBoundingClientRect();
             if (movesEl.scrollWidth > movesEl.clientWidth + 2) {
+              const box = movesEl.getBoundingClientRect();
+              const r = on.getBoundingClientRect();
               movesEl.scrollLeft += (r.left + r.width / 2) - (box.left + box.width / 2);
-            } else if (r.top < box.top || r.bottom > box.bottom) {
-              movesEl.scrollTop += (r.top - box.top) - box.height / 2;
+            } else {
+              const box = vScroll.getBoundingClientRect();
+              const r = on.getBoundingClientRect();
+              // keep the current move in view, a couple of rows above the bottom edge
+              if (r.top < box.top + 4 || r.bottom > box.bottom - 60) vScroll.scrollTop += (r.top - box.top) - box.height / 2;
             }
-          } else if (!explore && ply === 0) { movesEl.scrollTop = 0; movesEl.scrollLeft = 0; }
+          } else if (!explore && ply === 0) { vScroll.scrollTop = 0; movesEl.scrollTop = 0; movesEl.scrollLeft = 0; }
           const max = current.moves.length;
           root.querySelector('[data-nav="start"]').disabled = !explore && ply === 0;
           root.querySelector('[data-nav="prev"]').disabled = !explore && ply === 0;
