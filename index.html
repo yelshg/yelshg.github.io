@@ -2827,27 +2827,8 @@
     @media (hover: hover) and (pointer: fine) and (min-width: 821px) { .to-top { top: 18px; } }
     @media (prefers-reduced-motion: reduce) { .to-top { transition: none; } }
 
-    /* Header appears only on hover (desktop with a mouse) */
+    /* The menu stays visible at the top on every screen (it used to hide until the mouse reached the top edge). */
     .header-hotzone { display: none; }
-    @media (hover: hover) and (pointer: fine) and (min-width: 821px) {
-      .header-hotzone {
-        display: block;
-        position: fixed; top: 0; left: 0; right: 0; z-index: 101;
-        height: 26px;
-      }
-      html.js.is-loaded .site-header {
-        opacity: 0;
-        transform: translateY(-100%);
-        transition: transform 260ms ease 350ms, opacity 260ms ease 350ms;
-      }
-      html.js.is-loaded .header-hotzone:hover + .site-header,
-      html.js.is-loaded .site-header:hover,
-      html.js.is-loaded .site-header:focus-within {
-        opacity: 1;
-        transform: none;
-        transition-delay: 0s;
-      }
-    }
   </style>
 </head>
 <body>

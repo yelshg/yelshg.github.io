@@ -1349,6 +1349,14 @@
           if (nav === 'next') go(ply + 1);
           if (nav === 'end') go(current.moves.length);
         });
+        // Browsers (Safari especially) only let a page start audio from a tap, click or key press. Start it on the first one,
+        // with a silent blip, so later sounds that come from a timer (Play) or a drag aren't blocked.
+        const unlockAudio = () => {
+          const ac = sound.audio();
+          if (ac) { const s = ac.createBufferSource(); s.buffer = ac.createBuffer(1, 1, 22050); s.connect(ac.destination); s.start(0); }
+          if (!ac || ac.state === 'running') ['pointerdown', 'touchend', 'keydown', 'click'].forEach((t) => document.removeEventListener(t, unlockAudio, true));
+        };
+        ['pointerdown', 'touchend', 'keydown', 'click'].forEach((t) => document.addEventListener(t, unlockAudio, true));
         const soundBtn = root.querySelector('[data-nav="sound"]');
         const paintSound = () => {
           soundBtn.innerHTML = sound.on ? '&#x1F50A;&#xFE0E;' : '&#x1F507;&#xFE0E;';
