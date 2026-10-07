@@ -91,6 +91,14 @@
       font-family: "Roboto Mono", monospace !important; font-size: 13px;
     }
     .gv-player--top { margin-left: 30px; }
+    /* Captured pieces after each name: grouped by type, slightly overlapping, with the material lead after them */
+    .gv-who { display: flex; align-items: center; flex-wrap: wrap; gap: 2px 12px; min-width: 0; }
+    .gv-caps { display: flex; align-items: center; flex-wrap: wrap; row-gap: 2px; }
+    .gv-caps:empty { display: none; }
+    .gv-caps .grp { display: inline-flex; margin-right: 8px; }
+    .gv-caps .grp svg { width: 18px; height: 18px; flex: none; }
+    .gv-caps .grp svg + svg { margin-left: -9px; }
+    .gv-caps .adv { color: var(--slate); font-size: 12px; font-weight: 600; font-family: "Roboto Mono", monospace; }
     .gv-acc { color: var(--slate); }
     .gv-acc b { color: var(--green); font-weight: 500; }
     .gv-bottom { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 8px; align-items: center; }
@@ -396,7 +404,7 @@
         <span class="gv-comment__eval"></span>
         <button class="gv-resume" type="button" hidden aria-label="Resume game" title="Back to the game">&#x21A9;&#xFE0E; Resume</button>
       </div>
-      <div class="gv-player gv-player--top"><span class="gv-name"></span><span class="gv-acc"></span></div>
+      <div class="gv-player gv-player--top"><span class="gv-who"><span class="gv-name"></span><span class="gv-caps" aria-label="Captured pieces"></span></span><span class="gv-acc"></span></div>
       <div class="gv-board-wrap">
         <div class="gv-eval" aria-hidden="true"><div class="gv-eval__white"></div><span class="gv-eval__label"></span></div>
         <div class="gv-board" role="application" aria-label="Chessboard" tabindex="0">
@@ -418,7 +426,7 @@
       </div>
       <div class="gv-bottom">
         <button class="gv-resize" type="button" hidden></button>
-        <div class="gv-player gv-player--bottom"><span class="gv-name"></span><span class="gv-acc"></span></div>
+        <div class="gv-player gv-player--bottom"><span class="gv-who"><span class="gv-name"></span><span class="gv-caps" aria-label="Captured pieces"></span></span><span class="gv-acc"></span></div>
       </div>
       <div class="gv-moves-slot gv-moves-slot--mobile"></div>
     </div>
@@ -1025,10 +1033,37 @@
         const clearAnnotations = () => { arrows.clear(); marks.clear(); };
 
         // ---- Board ----
+        // ---- Captured pieces and material lead (under each player's name) ----
+        const CAP_ORDER = ['p', 'n', 'b', 'r', 'q'];
+        const VALUE = { p: 1, n: 3, b: 3, r: 5, q: 9, k: 0 };
+        const capturesNow = () => {
+          const base = current.caps[explore ? explore.base : ply] || { w: [], b: [] }, out = { w: base.w.slice(), b: base.b.slice() };
+          if (explore) explore.line.forEach((m) => { if (m.captured) out[m.color].push(m.captured); });
+          return out;
+        };
+        const drawCaptures = (pos) => {
+          const caps = capturesNow(), me = current.game.c, opp = me === 'w' ? 'b' : 'w';
+          // Material on the board (so a promotion counts as the piece it became)
+          const mat = { w: 0, b: 0 };
+          pos.forEach((p) => { if (p) mat[p[0]] += VALUE[p[1]]; });
+          const row = (side) => {
+            const theirs = side === 'w' ? 'b' : 'w', list = caps[side];
+            const groups = CAP_ORDER.filter((t) => list.includes(t)).map((t) => {
+              const n = list.filter((x) => x === t).length;
+              return `<span class="grp" title="${n} ${({ p: 'pawn', n: 'knight', b: 'bishop', r: 'rook', q: 'queen' })[t]}${n > 1 ? 's' : ''}">` +
+                Array.from({ length: n }, () => `<svg viewBox="0 0 40 40" aria-hidden="true"><use width="40" height="40" href="#pc-${theirs}${t}"/></svg>`).join('') + '</span>';
+            }).join('');
+            const lead = mat[side] - mat[theirs];
+            return groups + (lead > 0 ? `<span class="adv" title="Material lead">+${lead}</span>` : '');
+          };
+          root.querySelector('.gv-player--bottom .gv-caps').innerHTML = row(me);
+          root.querySelector('.gv-player--top .gv-caps').innerHTML = row(opp);
+        };
         const drawBoard = () => {
           const g = current.game;
           const flip = flipped();
           const pos = toBoard(fenNow());
+          drawCaptures(pos);
           const turn = fenNow().split(' ')[1];
           let last = null;
           let lastKind = null;
@@ -1315,8 +1350,16 @@
           const sans = g.s.split(' ');
           const c = new Rules(g.f || START);
           const fens = [c.fen()];
-          moves.forEach((u) => { c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] }); fens.push(c.fen()); });
-          current = { game: g, fens, moves, sans, off: calibrate(g, fens) };
+          // caps[i]: the pieces each side has captured after i moves, e.g. { w: ['p', 'n'], b: ['p'] } (white took a pawn and a knight)
+          const caps = [{ w: [], b: [] }];
+          moves.forEach((u) => {
+            const m = c.move({ from: u.slice(0, 2), to: u.slice(2, 4), promotion: u[4] });
+            fens.push(c.fen());
+            const prev = caps[caps.length - 1], next = { w: prev.w.slice(), b: prev.b.slice() };
+            if (m && m.captured) next[m.color].push(m.captured);
+            caps.push(next);
+          });
+          current = { game: g, fens, moves, sans, caps, off: calibrate(g, fens) };
           const bottom = root.querySelector('.gv-player--bottom');
           const top = root.querySelector('.gv-player--top');
           bottom.querySelector('.gv-name').textContent = `${ME} (${g.r})`;
