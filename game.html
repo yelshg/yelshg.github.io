@@ -666,9 +666,9 @@
           return c.moves({ square: sqName(i), verbose: true });
         };
 
-        // ---- Live engine (Stockfish in a background worker, loaded only when someone explores) ----
+        // ---- Live engine (Stockfish in a background worker, preloaded shortly after the page opens) ----
         const ENGINE_URL = 'https://cdn.jsdelivr.net/npm/stockfish.js@10.0.2/stockfish.js';
-        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, best: null, next: null, cache: {}, pending: false, queue: [], job: null, running: 0 };
+        const engine = { worker: null, ready: false, failed: false, fen: null, eval: null, depth: 0, best: null, next: null, cache: {}, reached: {}, pending: false, queue: [], job: null, running: 0 };
         // Position before the last move of the explored line (whose best move we show)
         const prevFen = () => {
           if (!explore || !explore.line.length) return null;
@@ -676,48 +676,59 @@
           explore.line.slice(0, -1).forEach((m) => t.move(m.san));
           return t.fen();
         };
-        const runNext = () => {
-          const job = engine.queue.shift();
-          if (!job) { engine.job = null; return; }
-          if (engine.running > 0) engine.worker.postMessage('stop');
-          engine.job = job;
-          engine.running++;
-          engine.worker.postMessage('position fen ' + job.fen);
-          engine.worker.postMessage('go depth ' + job.depth);
+        // Two Stockfish workers ("lanes") run side by side: "quick" gives both arrows a first answer in about 0.1 s each, and
+        // "deep" refines them to full depth. The quick lane is idle when you move, so it never waits for the deep search to stop.
+        const newLane = () => ({ worker: null, ready: false, running: 0, job: null, queue: [] });
+        const lanes = { quick: newLane(), deep: newLane() };
+        const runNext = (lane) => {
+          const job = lane.queue.shift();
+          if (!job) { lane.job = null; return; }
+          if (lane.running > 0) lane.worker.postMessage('stop');
+          lane.job = job;
+          lane.running++;
+          lane.worker.postMessage('position fen ' + job.fen);
+          lane.worker.postMessage(job.ms ? 'go movetime ' + job.ms : 'go depth ' + job.depth);
         };
-        const startEngine = () => {
-          if (engine.worker || engine.failed) return;
+        const startLane = (lane) => {
+          if (lane.worker || engine.failed) return;
           try {
             const src = `importScripts(${JSON.stringify(ENGINE_URL)});`;
-            engine.worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'application/javascript' })));
+            lane.worker = new Worker(URL.createObjectURL(new Blob([src], { type: 'application/javascript' })));
           } catch (e) { engine.failed = true; return; }
-          engine.worker.onerror = () => { engine.failed = true; if (explore) drawLive(); };
-          engine.worker.onmessage = (e) => {
+          lane.worker.onerror = () => { engine.failed = true; if (explore) drawLive(); };
+          lane.worker.onmessage = (e) => {
             const line = String(e.data);
-            if (line === 'uciok') { engine.worker.postMessage('isready'); return; }
+            if (line === 'uciok') { lane.worker.postMessage('isready'); return; }
             if (line === 'readyok') {
-              engine.ready = true;
+              lane.ready = true;
               if (engine.pending) { engine.pending = false; if (explore) analyse(); }
               return;
             }
-            const job = engine.job;
+            const job = lane.job;
             if (line.startsWith('bestmove')) {
-              engine.running = Math.max(0, engine.running - 1);
-              if (engine.running === 0 && job) {
+              lane.running = Math.max(0, lane.running - 1);
+              if (lane.running === 0 && job) {
                 const bm = line.match(/^bestmove ([a-h][1-8][a-h][1-8][qrbn]?)/);
-                if (bm) engine[job.kind === 'best' ? 'best' : 'next'] = { fen: job.fen, uci: bm[1] };
+                // A finished search only replaces the arrow if nothing deeper has reported for that position
+                const key = job.kind + ' ' + job.fen;
+                if (bm && (lane === lanes.deep || (engine.reached[key] || 0) <= (job.reachedAt || 0))) engine[job.kind === 'best' ? 'best' : 'next'] = { fen: job.fen, uci: bm[1] };
                 if (explore) drawLive();
-                runNext();
+                runNext(lane);
               }
               return;
             }
             // Ignore output from a search that was just stopped
-            if (engine.running !== 1 || !job) return;
+            if (lane.running !== 1 || !job) return;
             if (!line.startsWith('info') || !line.includes(' score ')) return;
             const depth = Number((line.match(/ depth (\d+)/) || [])[1]);
             const cp = line.match(/ score cp (-?\d+)/);
             const mate = line.match(/ score mate (-?\d+)/);
             if (!depth || (!cp && !mate) || line.includes(' upperbound') || line.includes(' lowerbound')) return;
+            // Keep the deepest result: a deeper search starts again at depth 1, so its early lines are ignored until it catches up
+            const key = job.kind + ' ' + job.fen;
+            if (depth < (engine.reached[key] || 0)) return;
+            engine.reached[key] = depth;
+            job.reachedAt = depth;
             const whiteToMove = job.fen.split(' ')[1] === 'w';
             let v;
             if (cp) v = Math.max(-2000, Math.min(2000, Number(cp[1]) * (whiteToMove ? 1 : -1)));
@@ -733,9 +744,10 @@
             }
             if (explore) drawLive();
           };
-          engine.worker.postMessage('uci');
+          lane.worker.postMessage('uci');
         };
-        // Analyse the explored line: first the best move before the last move, then the current position's eval
+        const startEngine = () => { startLane(lanes.quick); startLane(lanes.deep); };
+        // Analyse the explored line: the best move before the last move (green arrow) and the best move now (blue arrow, and the eval)
         const analyse = () => {
           const fen = explore.chess.fen();
           const before = prevFen();
@@ -746,19 +758,33 @@
           if (engine.next && engine.next.fen !== fen) engine.next = null;
           if (engine.failed) return;
           startEngine();
-          if (!engine.ready) { engine.pending = true; return; }
-          engine.queue = [];
-          if (before && !engine.best) engine.queue.push({ kind: 'best', fen: before, depth: 14 });
-          if (!explore.chess.game_over()) engine.queue.push({ kind: 'eval', fen, depth: 16 });
-          if (engine.queue.length) runNext();
-          else if (engine.running > 0) { engine.job = null; engine.worker.postMessage('stop'); }
+          const deepBest = before && engine.best && (engine.reached['best ' + before] || 0) >= 14;
+          const over = explore.chess.game_over();
+          if (!deepBest) delete engine.reached['best ' + before];
+          delete engine.reached['eval ' + fen];
+          const quick = [], deep = [];
+          if (before && !deepBest) { quick.push({ kind: 'best', fen: before, ms: 100 }); deep.push({ kind: 'best', fen: before, depth: 14 }); }
+          if (!over) { quick.push({ kind: 'eval', fen, ms: 100 }); deep.push({ kind: 'eval', fen, depth: 16 }); }
+          const give = (lane, jobs) => {
+            lane.queue = jobs;
+            if (jobs.length) runNext(lane);
+            else if (lane.running > 0) { lane.job = null; lane.worker.postMessage('stop'); }
+          };
+          // Until both are ready, whichever is ready takes everything (quick looks first); the other joins on the next move
+          if (lanes.quick.ready && lanes.deep.ready) { give(lanes.quick, quick); give(lanes.deep, deep); }
+          else if (lanes.quick.ready || lanes.deep.ready) give(lanes.quick.ready ? lanes.quick : lanes.deep, [...quick, ...deep]);
+          else engine.pending = true;
         };
+        const preload = () => (window.requestIdleCallback ? requestIdleCallback(() => startEngine(), { timeout: 4000 }) : startEngine());
+        setTimeout(preload, 1500);
         const stopEngine = () => {
-          engine.queue = [];
           engine.fen = null;
           engine.best = null;
           engine.next = null;
-          if (engine.worker && engine.ready && engine.running > 0) engine.worker.postMessage('stop');
+          for (const lane of Object.values(lanes)) {
+            lane.queue = [];
+            if (lane.worker && lane.ready && lane.running > 0) lane.worker.postMessage('stop');
+          }
         };
         // Value shown while exploring: game over states are exact, otherwise the engine's latest estimate
         const liveEval = () => {
