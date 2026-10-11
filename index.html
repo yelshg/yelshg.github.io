@@ -2836,7 +2836,7 @@
     .nav-pill { pointer-events: auto; width: min(440px, calc(100vw - 32px)); border: 1px solid rgba(180, 226, 255, 0.28); border-radius: 16px;
       background: rgba(2, 44, 88, 0.82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 12px 34px -14px rgba(0, 18, 40, 0.85);
       transition: width 320ms cubic-bezier(.2, .8, .2, 1), background 220ms ease; overflow: hidden; }
-    body.menu-open .nav-pill { width: min(620px, calc(100vw - 32px)); background: rgba(2, 44, 88, 0.97); }
+    body.menu-open .nav-pill { width: min(480px, calc(100vw - 32px)); background: rgba(2, 44, 88, 0.97); }
     .pill-bar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; height: 52px; padding: 0 8px; }
     .nav-pill .brand { width: 32px; height: 36px; font-size: 11px; justify-self: start; }
     .nav-pill .pill-name { justify-self: center; color: var(--lightest-slate); font-family: "Roboto Mono", monospace !important; font-size: 12.5px;
@@ -2856,21 +2856,12 @@
     body.menu-open .nav-pill .site-nav { grid-template-rows: 1fr; visibility: visible; opacity: 1; }
     .nav-pill .pill-inner { min-height: 0; overflow: hidden; }
     .nav-pill .site-nav { overflow: hidden; }
-    .pill-body { display: grid; grid-template-columns: 1fr 240px; gap: 24px; padding: 10px 20px 18px; }
+    .pill-body { padding: 10px 20px 18px; }
     .nav-pill .menu-links { display: flex; flex-direction: column; gap: 2px; }
     .nav-pill .menu-links a { display: block; margin: 0; padding: 3px 0; text-align: left; color: var(--lightest-slate);
       font-family: "Space Grotesk", sans-serif !important; font-size: 20px; font-weight: 500; line-height: 1.35; letter-spacing: -.01em; text-transform: none;
       transition: color 150ms ease, transform 150ms ease; }
     .nav-pill .menu-links a:hover, .nav-pill .menu-links a:focus-visible { color: var(--green); transform: translateX(4px); outline: none; }
-    .nav-pill .site-nav a.pill-card { margin: 0; padding: 0; } /* beats an older rule that enlarges menu links with negative margins */
-    .pill-card { position: relative; display: block; height: 150px; border-radius: 10px; overflow: hidden; border: 1px solid rgba(180, 226, 255, 0.22); background: var(--light-navy); }
-    .pill-photo { width: 100%; height: 100%; object-fit: cover; object-position: center 30%; filter: saturate(.85); transition: transform 400ms ease; }
-    .pill-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(2, 44, 88, 0.05), rgba(2, 44, 88, 0.45)); }
-    .pill-card:hover .pill-photo { transform: scale(1.04); }
-    .pill-chip { position: absolute; left: 50%; top: 50%; z-index: 1; transform: translate(-50%, -50%); display: inline-flex; align-items: center; gap: 8px;
-      padding: 6px 12px 6px 6px; border-radius: 999px; background: rgba(2, 44, 88, 0.72); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
-      color: #fff; font-size: 13px; white-space: nowrap; }
-    .pill-chip b { width: 20px; height: 20px; display: grid; place-items: center; border-radius: 50%; background: var(--green); color: var(--navy); font: 700 10px "Roboto Mono", monospace; }
     .pill-foot { display: grid; grid-template-columns: 1fr auto auto; gap: 18px; align-items: center; padding: 10px 20px 12px; border-top: 1px solid rgba(180, 226, 255, 0.16);
       color: var(--slate); font-family: "Roboto Mono", monospace !important; font-size: 11.5px; }
     .nav-pill .pill-foot a { margin: 0; padding: 0; color: var(--light-slate); }
@@ -2882,8 +2873,6 @@
     /* Back to Top moves to the bottom, out of the pill's way. */
     body .to-top { top: auto; bottom: 22px; }
     @media (max-width: 560px) {
-      .pill-body { grid-template-columns: 1fr; }
-      .pill-card { display: none; }
       .pill-foot { grid-template-columns: 1fr auto; }
       .pill-foot > span { display: none; }
     }
@@ -2953,10 +2942,6 @@
             <a href="#read">Read</a>
             <a href="#chess">Chess</a>
           </nav>
-          <a class="pill-card" href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer">
-            <img class="pill-photo" alt="" width="240" height="150">
-            <span class="pill-chip"><b aria-hidden="true">in</b>My LinkedIn</span>
-          </a>
         </div>
         <div class="pill-foot">
           <span>Portfolio Administrator</span>
@@ -3301,8 +3286,7 @@
       };
       menuToggle?.addEventListener('click', () => { setMenu(!document.body.classList.contains('menu-open')); if (document.body.classList.contains('menu-open')) setTimeout(() => { siteNav?.querySelector('.menu-links a')?.focus({ preventScroll: true }); const inner = siteNav?.querySelector('.pill-inner'); if (inner) inner.scrollTop = 0; }, 80); });
       document.querySelector('.nav-scrim')?.addEventListener('click', () => setMenu(false));
-      const pillPhoto = document.querySelector('.pill-photo'), portraitImg = document.querySelector('.portrait');
-      if (pillPhoto && portraitImg) pillPhoto.src = portraitImg.currentSrc || portraitImg.src;
+
       siteNav?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
       document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && document.body.classList.contains('menu-open')) {
