@@ -1328,7 +1328,6 @@
     #education-title::before { content: "03."; }
     #certifications-title::before { content: "04."; }
     #read-title::before { content: "05."; }
-    #chess-title::before { content: "06."; }
     #connect-title::before { content: "04."; }
 
     .feature-grid {
@@ -2766,48 +2765,6 @@
       .project__image:hover img { filter: grayscale(100%) brightness(50%); }
     }
 
-    /* ---------- Chess game history ---------- */
-    .gh-intro { max-width: 640px; margin: -24px 0 28px; color: var(--slate); font-size: 17px; }
-    .gh { margin: 0; padding: 0; list-style: none; border: 1px solid var(--lightest-navy); border-radius: 6px; overflow: hidden; background: var(--light-navy); }
-    .gh-row {
-      display: grid; grid-template-columns: 44px minmax(0, 1fr) 70px 80px 60px 110px; align-items: center;
-      gap: 0 8px; padding: 10px 14px;
-    }
-    .gh-head { padding-top: 12px; padding-bottom: 12px; color: var(--slate); font-size: 12px; border-bottom: 1px solid var(--lightest-navy); }
-    .gh-head span:nth-child(n+3), .gh a > span:nth-child(n+3) { text-align: center; }
-    .gh li + li a { border-top: 1px solid rgba(35, 53, 84, 0.6); }
-    .gh a { color: var(--light-slate); text-decoration: none; transition: background 150ms ease; }
-    .gh a:hover, .gh a:focus-visible { background: rgba(180, 226, 255, 0.05); outline: none; }
-    .gh a:hover .gh-me, .gh a:focus-visible .gh-me { color: var(--green); }
-    .gh-bot { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 6px; color: #8fb4dc; background: rgba(143, 180, 220, 0.12); }
-    .gh-bot svg { width: 20px; height: 20px; fill: currentColor; }
-    .gh-players, .gh-res, .gh-acc { display: grid; gap: 6px; }
-    .gh-p { display: flex; align-items: center; gap: 8px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 14px; }
-    .gh-p b { color: var(--lightest-slate); font-weight: 600; transition: color 150ms ease; }
-    .gh-p small { color: var(--slate); font-size: 12.5px; }
-    .gh-sq { flex: none; width: 13px; height: 13px; margin-left: 2px; border-radius: 2px; }
-    .gh-sq.w { background: #f0f0f0; }
-    .gh-sq.b { background: #5a5a5a; }
-    .gh-sq.win { box-shadow: 0 0 0 2px #81b64c; }
-    .gh-res { grid-template-columns: auto auto; justify-content: center; align-items: center; column-gap: 8px; color: var(--lightest-slate); font-family: "Roboto Mono", monospace !important; font-size: 13px; }
-    .gh-res i { grid-column: 2; grid-row: 1 / 3; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 3px; color: #fff; background: #81b64c; font-style: normal; font-weight: 700; font-size: 13px; line-height: 1; }
-    .gh-res i.L { background: #e02f2f; }
-    .gh-acc { color: var(--light-slate); font-family: "Roboto Mono", monospace !important; font-size: 13px; }
-    .gh-acc span:first-child { color: var(--lightest-slate); font-weight: 600; }
-    .gh-n, .gh-d { color: var(--light-slate); font-size: 13.5px; }
-    .gh-more { display: block; margin: 16px auto 0; padding: 10px 18px; color: var(--green); border: 1px solid var(--green); border-radius: 4px; background: none; font-family: "Roboto Mono", monospace !important; font-size: 13px; cursor: pointer; }
-    .gh-more:hover { background: rgba(180, 226, 255, 0.08); }
-    .gh-note { margin: 12px 0 0; color: var(--slate); font-size: 12px; }
-    @media (max-width: 620px) {
-      .gh-row { grid-template-columns: 34px minmax(0, 1fr) 46px 58px 74px; padding: 10px; gap: 0 6px; }
-      .gh-row > :nth-child(5) { display: none; }
-      .gh-bot { width: 28px; height: 28px; }
-      .gh-p { font-size: 13px; }
-      .gh-p small { display: none; }
-      .gh-n, .gh-d { font-size: 12px; }
-    }
-
-
     /* Back to top: appears once you reach "Currently Working On" */
     .to-top {
       position: fixed; top: 112px; left: 50%; z-index: 1200;
@@ -2940,7 +2897,6 @@
             <a href="#education">Education</a>
             <a href="#certifications">Certifications</a>
             <a href="#read">Read</a>
-            <a href="#chess">Chess</a>
           </nav>
         </div>
         <div class="pill-foot">
@@ -3115,16 +3071,6 @@
       </div>
     </section>
 
-    <section class="section" id="chess" aria-labelledby="chess-title">
-      <h2 class="section-title" id="chess-title">Chess Games</h2>
-      <p class="gh-intro">My sharpest wins against Chess.com bots. Click a game to replay it, with Stockfish analysis, in its own window.</p>
-      <ul class="gh" aria-label="Game history">
-        <li class="gh-row gh-head" aria-hidden="true"><span></span><span>Players</span><span>Result</span><span>Accuracy</span><span>Moves</span><span>Date</span></li>
-      </ul>
-      <button class="gh-more" type="button" hidden></button>
-      <p class="gh-note">Wins with my accuracy between 80% and 89%, from Chess.com.</p>
-    </section>
-
     <footer class="footer">
       <span>© 2026 Yelsh Gebreselassie</span>
       <a href="#main">Back to top ↑</a>
@@ -3170,7 +3116,6 @@
     </article>
   </div>
 
-  <script type="application/json" id="chess-games-data">[{"i":0,"d":"2026-10-03","c":"w","r":1496,"o":"Maria","or":"1000","a":84.8,"oa":74.9,"n":42,"res":"W"},{"i":1,"d":"2026-10-01","c":"w","r":1496,"o":"Wendy","or":"1500","a":83.8,"oa":77.1,"n":60,"res":"W"},{"i":2,"d":"2026-09-29","c":"w","r":1496,"o":"Maria","or":"1000","a":84.7,"oa":69.7,"n":34,"res":"W"},{"i":4,"d":"2026-09-26","c":"b","r":1496,"o":"Maria","or":"1000","a":83.8,"oa":74.4,"n":41,"res":"W"},{"i":3,"d":"2026-09-26","c":"w","r":1496,"o":"Maria","or":"1000","a":80.3,"oa":74.5,"n":49,"res":"W"},{"i":6,"d":"2026-09-24","c":"b","r":1496,"o":"Maria","or":"1000","a":86.2,"oa":82.9,"n":56,"res":"W"},{"i":5,"d":"2026-09-24","c":"b","r":1496,"o":"Maria","or":"1000","a":84.5,"oa":74,"n":40,"res":"W"},{"i":7,"d":"2026-09-21","c":"b","r":1496,"o":"Wendy","or":"1500","a":82.8,"oa":79.7,"n":58,"res":"W"},{"i":8,"d":"2026-09-20","c":"b","r":1496,"o":"Maria","or":"1000","a":87.3,"oa":79.5,"n":35,"res":"W"},{"i":9,"d":"2026-09-17","c":"w","r":1496,"o":"Maria","or":"1000","a":86.6,"oa":79.6,"n":41,"res":"W"},{"i":12,"d":"2026-09-13","c":"b","r":1496,"o":"Maria","or":"1000","a":87.4,"oa":83.3,"n":56,"res":"W"},{"i":11,"d":"2026-09-13","c":"w","r":1112,"o":"Martin","or":"250","a":83.4,"oa":68.6,"n":35,"res":"W"},{"i":10,"d":"2026-09-13","c":"w","r":1112,"o":"Martin","or":"250","a":86,"oa":74,"n":38,"res":"W"},{"i":15,"d":"2026-09-09","c":"w","r":1496,"o":"Hans","or":"1000","a":80.7,"oa":75.1,"n":43,"res":"W"},{"i":14,"d":"2026-09-09","c":"w","r":1496,"o":"Hans","or":"1000","a":80.8,"oa":73.2,"n":64,"res":"W"},{"i":13,"d":"2026-09-09","c":"b","r":1112,"o":"Martin","or":"250","a":84.4,"oa":75.6,"n":35,"res":"W"},{"i":17,"d":"2026-09-04","c":"w","r":1496,"o":"Hans","or":"1000","a":84.6,"oa":76.4,"n":45,"res":"W"},{"i":16,"d":"2026-09-04","c":"w","r":1496,"o":"Hans","or":"1000","a":84,"oa":75.6,"n":37,"res":"W"},{"i":18,"d":"2026-08-27","c":"w","r":1496,"o":"Emir","or":"1200","a":87.3,"oa":80.1,"n":55,"res":"W"},{"i":19,"d":"2026-08-21","c":"w","r":1496,"o":"Maria","or":"1000","a":80.1,"oa":74.6,"n":48,"res":"W"},{"i":20,"d":"2026-08-20","c":"w","r":1496,"o":"Maria","or":"1000","a":82.8,"oa":79.6,"n":61,"res":"W"},{"i":21,"d":"2026-08-17","c":"b","r":1496,"o":"Maria","or":"1000","a":81,"oa":67,"n":36,"res":"W"},{"i":24,"d":"2026-08-16","c":"b","r":1496,"o":"Maria","or":"1000","a":82.2,"oa":72.6,"n":32,"res":"W"},{"i":23,"d":"2026-08-16","c":"b","r":1496,"o":"Maria","or":"1000","a":85.6,"oa":79.9,"n":70,"res":"W"},{"i":22,"d":"2026-08-16","c":"b","r":1496,"o":"Maria","or":"1000","a":80.4,"oa":76,"n":65,"res":"W"},{"i":26,"d":"2026-08-15","c":"w","r":1496,"o":"Martin","or":"250","a":86.5,"oa":75.3,"n":32,"res":"W"},{"i":25,"d":"2026-08-15","c":"w","r":1496,"o":"Martin","or":"250","a":85.3,"oa":78,"n":50,"res":"W"},{"i":27,"d":"2026-08-13","c":"w","r":1496,"o":"Martin","or":"250","a":85.1,"oa":69.4,"n":25,"res":"W"},{"i":28,"d":"2026-08-10","c":"w","r":1496,"o":"Maria","or":"1000","a":86.7,"oa":67.5,"n":27,"res":"W"},{"i":30,"d":"2026-08-09","c":"w","r":1496,"o":"Martin","or":"250","a":82.4,"oa":75.8,"n":51,"res":"W"},{"i":29,"d":"2026-08-09","c":"w","r":1496,"o":"Maria","or":"1000","a":81.5,"oa":75.5,"n":34,"res":"W"},{"i":33,"d":"2026-08-08","c":"w","r":1496,"o":"Martin","or":"250","a":80.6,"oa":62.2,"n":24,"res":"W"},{"i":32,"d":"2026-08-08","c":"w","r":1496,"o":"Martin","or":"250","a":87.7,"oa":77.7,"n":32,"res":"W"},{"i":31,"d":"2026-08-08","c":"w","r":1496,"o":"Martin","or":"250","a":84.9,"oa":77.4,"n":45,"res":"W"},{"i":35,"d":"2026-08-06","c":"w","r":1496,"o":"Martin","or":"250","a":86.5,"oa":69.1,"n":29,"res":"W"},{"i":34,"d":"2026-08-06","c":"b","r":1496,"o":"Martin","or":"250","a":80.6,"oa":74.6,"n":55,"res":"W"},{"i":36,"d":"2026-08-05","c":"w","r":1496,"o":"Martin","or":"250","a":85.5,"oa":68.6,"n":27,"res":"W"},{"i":37,"d":"2026-08-04","c":"w","r":1496,"o":"Maria","or":"1000","a":82.8,"oa":69.4,"n":33,"res":"W"},{"i":38,"d":"2026-07-24","c":"w","r":1496,"o":"Maria","or":"1000","a":81.9,"oa":73.5,"n":42,"res":"W"},{"i":39,"d":"2026-07-20","c":"w","r":1496,"o":"Maria","or":"1000","a":85.5,"oa":80.8,"n":80,"res":"W"},{"i":40,"d":"2026-07-16","c":"w","r":1496,"o":"Martin","or":"250","a":80.3,"oa":61.9,"n":23,"res":"W"},{"i":42,"d":"2026-07-11","c":"w","r":1496,"o":"Martin","or":"250","a":83.3,"oa":70.9,"n":34,"res":"W"},{"i":41,"d":"2026-07-11","c":"b","r":1496,"o":"Maria","or":"1000","a":80,"oa":62.1,"n":24,"res":"W"},{"i":43,"d":"2026-07-10","c":"w","r":1496,"o":"Maria","or":"1000","a":84.1,"oa":76.1,"n":59,"res":"W"},{"i":45,"d":"2026-07-05","c":"w","r":1496,"o":"Maria","or":"1000","a":83.8,"oa":68.1,"n":25,"res":"W"},{"i":44,"d":"2026-07-05","c":"w","r":1496,"o":"Maria","or":"1000","a":85.2,"oa":81.5,"n":61,"res":"W"},{"i":47,"d":"2026-06-25","c":"w","r":1496,"o":"Martin","or":"250","a":85.8,"oa":75.6,"n":36,"res":"W"},{"i":46,"d":"2026-06-25","c":"w","r":1496,"o":"Martin","or":"250","a":88.8,"oa":79.9,"n":30,"res":"W"},{"i":49,"d":"2026-06-23","c":"b","r":1496,"o":"Maria","or":"1000","a":85.3,"oa":81.2,"n":56,"res":"W"},{"i":48,"d":"2026-06-23","c":"b","r":1496,"o":"Maria","or":"1000","a":82.8,"oa":75.9,"n":44,"res":"W"},{"i":50,"d":"2026-06-21","c":"b","r":1496,"o":"Maria","or":"1000","a":83.5,"oa":77.2,"n":59,"res":"W"},{"i":51,"d":"2026-06-17","c":"w","r":1496,"o":"Nora","or":"2200","a":87.8,"oa":78.4,"n":41,"res":"W"},{"i":52,"d":"2026-06-16","c":"w","r":1496,"o":"Jimmy","or":"600","a":86.2,"oa":81.2,"n":46,"res":"W"},{"i":53,"d":"2026-06-12","c":"w","r":1496,"o":"Pokimane","or":"1000","a":86.1,"oa":77.2,"n":48,"res":"W"},{"i":54,"d":"2026-06-11","c":"b","r":1496,"o":"Pokimane","or":"1000","a":81,"oa":69.6,"n":35,"res":"W"},{"i":57,"d":"2026-06-10","c":"w","r":1496,"o":"Pokimane","or":"1000","a":88.8,"oa":71.7,"n":24,"res":"W"},{"i":56,"d":"2026-06-10","c":"b","r":1496,"o":"Pokimane","or":"1000","a":87,"oa":72.7,"n":35,"res":"W"},{"i":55,"d":"2026-06-10","c":"b","r":1496,"o":"Pokimane","or":"1000","a":83.9,"oa":72.6,"n":33,"res":"W"},{"i":59,"d":"2026-06-09","c":"w","r":1496,"o":"Pokimane","or":"1000","a":87,"oa":72.2,"n":30,"res":"W"},{"i":58,"d":"2026-06-09","c":"w","r":1496,"o":"Pokimane","or":"1000","a":85.9,"oa":81.2,"n":52,"res":"W"},{"i":60,"d":"2026-06-08","c":"w","r":1496,"o":"Maria","or":"1000","a":88.3,"oa":77.1,"n":33,"res":"W"},{"i":61,"d":"2026-06-07","c":"w","r":1496,"o":"Maria","or":"1000","a":82.7,"oa":79.1,"n":49,"res":"W"},{"i":66,"d":"2026-06-06","c":"w","r":1496,"o":"Martin","or":"250","a":88.4,"oa":73.5,"n":27,"res":"W"},{"i":65,"d":"2026-06-06","c":"w","r":1496,"o":"Martin","or":"250","a":80.9,"oa":69.5,"n":35,"res":"W"},{"i":64,"d":"2026-06-06","c":"w","r":1496,"o":"Martin","or":"250","a":88.3,"oa":71.8,"n":23,"res":"W"},{"i":63,"d":"2026-06-06","c":"w","r":1496,"o":"Martin","or":"250","a":81.3,"oa":70.6,"n":36,"res":"W"},{"i":62,"d":"2026-06-06","c":"w","r":1496,"o":"Maria","or":"1000","a":87.4,"oa":65.9,"n":22,"res":"W"},{"i":68,"d":"2026-06-02","c":"b","r":1496,"o":"Wendy","or":"1500","a":83.5,"oa":73.3,"n":41,"res":"W"},{"i":67,"d":"2026-06-02","c":"w","r":1496,"o":"Martin","or":"250","a":83.8,"oa":73,"n":32,"res":"W"},{"i":70,"d":"2026-05-27","c":"w","r":1496,"o":"Martin","or":"250","a":80,"oa":71.4,"n":38,"res":"W"},{"i":69,"d":"2026-05-27","c":"w","r":1496,"o":"Martin","or":"250","a":88.7,"oa":72.5,"n":25,"res":"W"},{"i":71,"d":"2026-05-25","c":"w","r":1496,"o":"Wendy","or":"1500","a":88.5,"oa":82.5,"n":60,"res":"W"},{"i":72,"d":"2026-05-24","c":"w","r":1496,"o":"Martin","or":"250","a":81.8,"oa":73.1,"n":38,"res":"W"},{"i":73,"d":"2026-05-19","c":"w","r":1496,"o":"Wendy","or":"1500","a":84.1,"oa":79.1,"n":67,"res":"W"},{"i":74,"d":"2026-05-17","c":"b","r":1200,"o":"Wendy","or":"1500","a":81.7,"oa":69.8,"n":39,"res":"W"},{"i":75,"d":"2026-05-15","c":"w","r":1200,"o":"Maria","or":"1000","a":81.3,"oa":73.8,"n":31,"res":"W"},{"i":76,"d":"2026-05-14","c":"b","r":1200,"o":"Wendy","or":"1500","a":84.6,"oa":80,"n":59,"res":"W"},{"i":77,"d":"2026-05-02","c":"w","r":1200,"o":"xQc","or":"1200","a":84.6,"oa":75.5,"n":46,"res":"W"},{"i":78,"d":"2026-05-01","c":"w","r":1200,"o":"xQc","or":"1200","a":84.2,"oa":76.4,"n":51,"res":"W"},{"i":79,"d":"2026-04-19","c":"w","r":1496,"o":"Maria","or":"1000","a":81.7,"oa":69.7,"n":37,"res":"W"},{"i":80,"d":"2026-04-15","c":"w","r":1496,"o":"Maria","or":"1000","a":80.2,"oa":73.2,"n":57,"res":"W"},{"i":81,"d":"2026-04-13","c":"b","r":1496,"o":"Maria","or":"1000","a":85.3,"oa":80.4,"n":52,"res":"W"},{"i":82,"d":"2026-04-06","c":"w","r":1544,"o":"Wendy","or":"1500","a":87.8,"oa":81.4,"n":64,"res":"W"},{"i":83,"d":"2026-04-01","c":"w","r":1544,"o":"Wendy","or":"1500","a":83.9,"oa":81.3,"n":72,"res":"W"},{"i":84,"d":"2026-03-31","c":"w","r":1544,"o":"Wendy","or":"1500","a":88.2,"oa":75.9,"n":44,"res":"W"},{"i":85,"d":"2026-03-25","c":"w","r":1517,"o":"Wendy","or":"1500","a":82.1,"oa":70.3,"n":44,"res":"W"},{"i":88,"d":"2026-03-21","c":"w","r":1517,"o":"Jimmy","or":"600","a":88.8,"oa":82.1,"n":43,"res":"W"},{"i":87,"d":"2026-03-21","c":"w","r":1517,"o":"Jimmy","or":"600","a":84.2,"oa":73.2,"n":35,"res":"W"},{"i":86,"d":"2026-03-21","c":"w","r":1517,"o":"Maria","or":"1000","a":84.5,"oa":77.9,"n":37,"res":"W"},{"i":89,"d":"2026-03-16","c":"w","r":1517,"o":"Jimmy","or":"600","a":83.3,"oa":77.4,"n":42,"res":"W"},{"i":90,"d":"2026-03-15","c":"w","r":1517,"o":"Intermediate","or":"1500","a":83.5,"oa":78.4,"n":32,"res":"W"},{"i":91,"d":"2026-03-10","c":"b","r":1517,"o":"Wendy","or":"1500","a":81,"oa":78.9,"n":100,"res":"W"},{"i":92,"d":"2026-03-06","c":"w","r":1200,"o":"Wendy","or":"1500","a":80.6,"oa":75.5,"n":65,"res":"W"},{"i":93,"d":"2026-03-03","c":"w","r":1200,"o":"Wayne","or":"250","a":86.9,"oa":79.5,"n":43,"res":"W"},{"i":94,"d":"2026-03-02","c":"w","r":1200,"o":"Wendy","or":"1500","a":87.6,"oa":78.4,"n":74,"res":"W"},{"i":96,"d":"2026-03-01","c":"w","r":1200,"o":"Jimmy","or":"600","a":82.1,"oa":72.7,"n":35,"res":"W"},{"i":95,"d":"2026-03-01","c":"b","r":1200,"o":"Maria","or":"1000","a":80.3,"oa":72.8,"n":33,"res":"W"},{"i":97,"d":"2026-02-12","c":"b","r":1305,"o":"Maria","or":"1000","a":84.2,"oa":75.2,"n":46,"res":"W"},{"i":98,"d":"2026-02-10","c":"b","r":1305,"o":"Wendy","or":"1500","a":84.5,"oa":62.1,"n":27,"res":"W"},{"i":99,"d":"2026-01-27","c":"w","r":1171,"o":"Wendy","or":"1500","a":83.7,"oa":75.4,"n":71,"res":"W"},{"i":100,"d":"2026-01-26","c":"w","r":1200,"o":"Maria","or":"1000","a":86.6,"oa":67.5,"n":22,"res":"W"},{"i":101,"d":"2026-01-25","c":"w","r":1200,"o":"Martin","or":"250","a":82.7,"oa":80.8,"n":51,"res":"W"},{"i":102,"d":"2026-01-15","c":"b","r":1200,"o":"Mateo","or":"1400","a":88.6,"oa":77.2,"n":45,"res":"W"}]</script>
 
   <script>
     (() => {
@@ -3608,70 +3553,6 @@
         });
       })();
 
-      /* ---------- Chess game history ---------- */
-      (() => {
-        const list = document.querySelector('.gh');
-        const more = document.querySelector('.gh-more');
-        const dataEl = document.getElementById('chess-games-data');
-        if (!list || !dataEl) return;
-        const games = JSON.parse(dataEl.textContent);
-        const ME = 'ElshMaine';
-        const SHOWN = 10;
-        const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-        const fmtDate = (d) => new Date(d + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-        const BOT = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 2h2v3h4a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-1v3h-2v-3h-4v3H8v-3H7a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h4V2zm-2 8a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm6 0a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zm-5 5v1h4v-1h-4zM1 10h2v5H1v-5zm20 0h2v5h-2v-5z"/></svg>';
-        const rows = games.map((g) => {
-          const won = g.res === 'W';
-          const opp = g.c === 'w' ? 'b' : 'w';
-          const li = document.createElement('li');
-          li.innerHTML =
-            `<a class="gh-row" href="game.html#${g.i}" target="yelsh-chess-game" aria-label="${esc(ME)} versus ${esc(g.o)}, ${won ? 'won' : 'lost'}, ${fmtDate(g.d)}">` +
-              `<span class="gh-bot">${BOT}</span>` +
-              `<span class="gh-players">` +
-                `<span class="gh-p"><i class="gh-sq ${g.c}${won ? ' win' : ''}"></i><b class="gh-me">${esc(ME)}</b><small>(${esc(g.r)})</small></span>` +
-                `<span class="gh-p"><i class="gh-sq ${opp}${won ? '' : ' win'}"></i><b>${esc(g.o)}</b><small>(${esc(g.or)})</small></span>` +
-              `</span>` +
-              `<span class="gh-res"><span>${won ? 1 : 0}</span><span>${won ? 0 : 1}</span><i class="${won ? 'W' : 'L'}">${won ? '+' : '−'}</i></span>` +
-              `<span class="gh-acc"><span>${g.a.toFixed(1)}</span><span>${g.oa == null ? '–' : g.oa.toFixed(1)}</span></span>` +
-              `<span class="gh-n">${g.n}</span>` +
-              `<span class="gh-d">${fmtDate(g.d)}</span>` +
-            `</a>`;
-          list.appendChild(li);
-          return li;
-        });
-
-        // Open the game in its own window (one window, reused for every game)
-        list.addEventListener('click', (e) => {
-          const a = e.target.closest('a.gh-row');
-          if (!a || e.ctrlKey || e.metaKey || e.shiftKey || e.button !== 0) return;
-          // Phones and tablets: open the game right here (pop-up windows don't work reliably there,
-          // especially inside in-app browsers like Telegram, Instagram or LinkedIn)
-          if (window.matchMedia('(pointer: coarse), (max-width: 820px)').matches) {
-            e.preventDefault();
-            window.location.href = a.href;
-            return;
-          }
-          const sw = window.screen.availWidth || 1280;
-          const sh = window.screen.availHeight || 900;
-          const w = Math.min(1240, sw - 40);
-          const h = Math.min(860, sh - 60);
-          const left = Math.max(0, Math.round((window.screenX || 0) + ((window.outerWidth || sw) - w) / 2));
-          const top = Math.max(0, Math.round((window.screenY || 0) + ((window.outerHeight || sh) - h) / 2));
-          const win = window.open(a.href, 'yelsh-chess-game', `popup=yes,width=${w},height=${h},left=${left},top=${top}`);
-          if (win) { e.preventDefault(); win.focus(); }
-        });
-
-        const setExpanded = (open) => {
-          rows.forEach((li, i) => { li.hidden = !open && i >= SHOWN; });
-          more.setAttribute('aria-expanded', String(open));
-          more.textContent = open ? 'Show fewer' : `Show all ${rows.length} games`;
-        };
-        if (rows.length > SHOWN) {
-          more.hidden = false;
-          setExpanded(false);
-          more.addEventListener('click', () => setExpanded(more.getAttribute('aria-expanded') !== 'true'));
-        }
-      })();
 
       const POSTS_SHOWN = 4;
       const postList = document.getElementById('post-list');
