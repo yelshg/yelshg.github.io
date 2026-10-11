@@ -163,12 +163,12 @@
     .gv-sq .dot {
       position: absolute; top: 50%; left: 50%; z-index: 2;
       width: 30%; height: 30%; border-radius: 50%;
-      background: rgba(10, 25, 47, 0.28); transform: translate(-50%, -50%);
+      background: rgba(2, 44, 88, 0.28); transform: translate(-50%, -50%);
       pointer-events: none;
     }
     .gv-sq .dot.cap {
       width: 92%; height: 92%; background: none;
-      border: 5px solid rgba(10, 25, 47, 0.28);
+      border: 5px solid rgba(2, 44, 88, 0.28);
     }
     .gv-sq .co {
       position: absolute; z-index: 1;
@@ -271,7 +271,7 @@
       border: 0; border-left: 2px solid transparent; border-bottom: 1px solid var(--lightest-navy);
       background: none; cursor: pointer; transition: background 150ms ease;
     }
-    .gv-list button:hover { background: rgba(100, 255, 218, 0.05); }
+    .gv-list button:hover { background: rgba(180, 226, 255, 0.05); }
     .gv-list button.on { border-left-color: var(--green); background: var(--light-navy); }
     .gv-list .t { color: var(--lightest-slate); font-size: 15px; }
     .gv-list .ac { color: var(--green); font-family: "Roboto Mono", monospace !important; font-size: 13px; text-align: right; }
@@ -623,7 +623,7 @@
         const LIST_MARKS = 'XTRB'; // only these appear in the move list
         const THUMB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 21h4V9H2v12zm20-11c0-1.1-.9-2-2-2h-6.3l1-4.6v-.3c0-.4-.2-.8-.4-1.1L13.2 1 6.6 7.6C6.2 8 6 8.5 6 9v10c0 1.1.9 2 2 2h9c.8 0 1.5-.5 1.8-1.2l3-7.1c.1-.2.2-.5.2-.7v-2z"/></svg>';
         const BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 4.5C4.6 3.6 7.8 3.7 11 5.6v14.2c-3.1-1.8-6.3-1.9-9-1V4.5zm20 0c-2.6-.9-5.8-.8-9 1.1v14.2c3.1-1.8 6.3-1.9 9-1V4.5z"/></svg>';
-        const EXPLORE = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#64ffda"/><path d="M12 5.5l2.2 4.3 4.3 2.2-4.3 2.2L12 18.5l-2.2-4.3L5.5 12l4.3-2.2z" fill="#0a192f"/></svg>';
+        const EXPLORE = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="#b4e2ff"/><path d="M12 5.5l2.2 4.3 4.3 2.2-4.3 2.2L12 18.5l-2.2-4.3L5.5 12l4.3-2.2z" fill="#022c58"/></svg>';
         const symHtml = (d) => d.sym === 'thumb' ? THUMB : d.sym === 'book' ? BOOK : d.sym;
         const markHtml = (k) => {
           const d = KINDS[k];
