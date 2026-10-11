@@ -3589,11 +3589,11 @@
       /* ---------- Back to top ---------- */
       (() => {
         const btn = document.querySelector('.to-top');
-        const mark = document.getElementById('projects');
-        if (!btn || !mark) return;
+        if (!btn) return;
         let shown = false;
+        // Shows once the visitor has scrolled past the first screen (the video area), and hides again near the top.
         const update = () => {
-          const show = mark.getBoundingClientRect().top <= window.innerHeight * 0.5;
+          const show = window.scrollY > window.innerHeight * 0.9;
           if (show !== shown) { shown = show; btn.classList.toggle('is-shown', show); btn.tabIndex = show ? 0 : -1; }
         };
         btn.tabIndex = -1;
