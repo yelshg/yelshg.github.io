@@ -2884,6 +2884,13 @@
       .menu-body { grid-template-columns: 1fr; gap: 34px; }
     }
     @media (prefers-reduced-motion: reduce) { body .site-nav, .menu-close, body .site-nav .menu-links a { transition: none; } }
+    /* ---- Tighter spacing between Experience, Education, Certifications and Read ---- */
+    #experience { padding-bottom: 60px; }
+    #education, #certifications { padding-top: 60px; padding-bottom: 60px; }
+    #read { padding-top: 60px; }
+    /* Education and Certifications don't need the tab area's reserved height (their entries are short). */
+    #education .jobs-layout, #certifications .jobs-layout { min-height: 0; }
+
     /* ---- Background video behind the top section ---- */
     .hero-media { position: absolute; top: 0; left: 0; right: 0; height: 100vh; min-height: 560px; z-index: 0; overflow: hidden; pointer-events: none; background: var(--navy); }
     .hero-media video { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 900ms ease; }
