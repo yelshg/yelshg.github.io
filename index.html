@@ -355,7 +355,7 @@
     }
   </style>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Mono:wght@400;500&family=Rambla:wght@400;700&family=Rubik:wght@400;500;600;700&display=swap');
 
     /* Amrayu-inspired visual system, adapted to Yelshaday's content. */
     :root {
@@ -2787,53 +2787,151 @@
 
     /* The menu stays visible at the top on every screen (it used to hide until the mouse reached the top edge). */
     .header-hotzone { display: none; }
-    /* ---- Top menu: a floating pill that expands into a card (layout after sunday.ai), in this site's navy and light blue ---- */
-    body .site-header { justify-content: center; align-items: flex-start; min-height: 0; padding: 16px 16px 0; background: none; box-shadow: none;
-      -webkit-backdrop-filter: none; backdrop-filter: none; pointer-events: none; }
-    .nav-pill { pointer-events: auto; width: min(440px, calc(100vw - 32px)); border: 1px solid rgba(180, 226, 255, 0.28); border-radius: 16px;
-      background: rgba(2, 44, 88, 0.82); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); box-shadow: 0 12px 34px -14px rgba(0, 18, 40, 0.85);
-      transition: width 320ms cubic-bezier(.2, .8, .2, 1), background 220ms ease; overflow: hidden; }
-    body.menu-open .nav-pill { width: min(480px, calc(100vw - 32px)); background: rgba(2, 44, 88, 0.97); }
-    .pill-bar { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; height: 52px; padding: 0 8px; }
-    .nav-pill .brand { width: 32px; height: 36px; font-size: 11px; justify-self: start; }
-    .nav-pill .pill-name { justify-self: center; color: var(--lightest-slate); font-family: "Roboto Mono", monospace !important; font-size: 12.5px;
-      letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; }
-    .nav-pill .menu-toggle { justify-self: end; position: relative; z-index: 1; display: grid; place-content: center; gap: 6px; width: 36px; height: 36px; padding: 0;
-      border: 0; border-radius: 9px; background: transparent; cursor: pointer; transition: background 150ms ease; }
-    .nav-pill .menu-toggle:hover, .nav-pill .menu-toggle:focus-visible { background: rgba(180, 226, 255, 0.12); outline: none; }
-    .nav-pill .menu-toggle span { display: block; width: 18px; height: 1.6px; margin: 0; border-radius: 2px; background: var(--lightest-slate); opacity: 1;
-      transition: transform 260ms ease; }
-    body.menu-open .nav-pill .menu-toggle { background: rgba(180, 226, 255, 0.12); }
-    body.menu-open .nav-pill .menu-toggle span:nth-child(1) { width: 18px; transform: translateY(3.8px) rotate(45deg); }
-    body.menu-open .nav-pill .menu-toggle span:nth-child(2) { width: 18px; transform: translateY(-3.8px) rotate(-45deg); }
+    /* =====================================================================================================
+       Ritholtz Wealth style (layout and colors after ritholtzwealth.com): navy bar and MENU, video banner,
+       white content with Rambla titles and Rubik text, accordion rows, navy box footer.
+       ===================================================================================================== */
+    :root { --r-navy: #022c58; --r-blue: #20569c; --r-light: #b4e2ff; --r-yellow: #ffb921; --r-ink: #151515; --r-rule: #3a3a3a; }
+    body { background: #fffffe; }
+    .social-rail, .email-rail { display: none; }
 
-    .nav-pill .site-nav { position: static; inset: auto; z-index: auto; width: auto; display: grid; grid-template-rows: 0fr; gap: 0; padding: 0;
-      background: none; box-shadow: none; transform: none; visibility: hidden; opacity: 0; font-size: inherit;
-      transition: grid-template-rows 320ms cubic-bezier(.2, .8, .2, 1), opacity 220ms ease, visibility 320ms; }
-    body.menu-open .nav-pill .site-nav { grid-template-rows: 1fr; visibility: visible; opacity: 1; }
-    .nav-pill .pill-inner { min-height: 0; overflow: hidden; }
-    .nav-pill .site-nav { overflow: hidden; }
-    .pill-body { padding: 10px 20px 18px; }
-    .nav-pill .menu-links { display: flex; flex-direction: column; gap: 2px; }
-    .nav-pill .menu-links a { display: block; margin: 0; padding: 3px 0; text-align: left; color: var(--lightest-slate);
-      font-family: "Space Grotesk", sans-serif !important; font-size: 20px; font-weight: 500; line-height: 1.35; letter-spacing: -.01em; text-transform: none;
+    /* Top bar */
+    body .site-header { position: fixed; top: 0; left: 0; right: 0; z-index: 100; display: flex; align-items: center; justify-content: flex-start; gap: 14px;
+      min-height: 72px; padding: 0 32px; background: var(--r-navy); box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; pointer-events: auto; }
+    .site-header .brand { width: 38px; height: 43px; font-size: 12px; }
+    .site-header .bar-name { color: #fff; font-family: "Rambla", sans-serif !important; font-size: 22px; font-weight: 700; letter-spacing: .01em; }
+    .site-header .menu-toggle { margin-left: auto; display: inline-flex; flex-direction: row; align-items: center; gap: 12px; width: auto; height: 44px; padding: 0 2px;
+      border: 0; background: transparent; color: #fff; cursor: pointer; position: relative; z-index: 1; }
+    .site-header .menu-toggle > span { display: inline-flex; width: auto; height: auto; margin: 0; background: none; border-radius: 0; opacity: 1; transform: none; }
+    .site-header .menu-toggle .menu-word { font-family: "Rubik", sans-serif !important; font-size: 14px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+    .site-header .menu-toggle:hover .menu-word, .site-header .menu-toggle:focus-visible .menu-word { color: var(--r-light); }
+    .site-header .menu-toggle .menu-dots { display: grid; grid-template-columns: repeat(3, 10px); gap: 3px; }
+    .menu-dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--r-light); transition: transform 200ms ease; }
+    .menu-dots i:nth-child(1) { background: #4f8fd6; }
+    .menu-dots i:nth-child(4) { background: var(--r-yellow); }
+    .menu-dots i:nth-child(5) { background: #f58220; }
+    .menu-dots i:nth-child(6) { background: #e8423f; }
+    .menu-toggle:hover .menu-dots i { transform: scale(1.12); }
+
+    /* Full-screen menu */
+    body .site-nav { position: fixed; inset: 0; z-index: 200; width: auto; display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 0;
+      padding: 0 32px 40px; background: var(--r-navy); box-shadow: none; font-size: inherit; overflow-y: auto; transform: none;
+      visibility: hidden; opacity: 0; transition: opacity 220ms ease, visibility 220ms; }
+    body.menu-open .site-nav { visibility: visible; opacity: 1; }
+    body.menu-open { overflow: hidden; }
+    .menu-top { display: flex; align-items: center; justify-content: space-between; min-height: 72px; }
+    .menu-top .brand { width: 38px; height: 43px; font-size: 12px; }
+    .menu-close { width: 44px; height: 44px; display: grid; place-items: center; border: 2px solid var(--r-yellow); border-radius: 50%; background: transparent;
+      color: var(--r-yellow); cursor: pointer; transition: background 150ms ease, transform 150ms ease; }
+    .menu-close:hover, .menu-close:focus-visible { background: rgba(255, 185, 33, 0.12); transform: rotate(90deg); outline: none; }
+    .menu-close svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; }
+    .menu-body { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 360px); gap: 40px; align-items: start; padding-top: 14px; }
+    body .site-nav .menu-links { display: flex; flex-direction: column; gap: 6px; }
+    body .site-nav .menu-links a { display: block; margin: 0; padding: 4px 0; text-align: left; color: var(--r-light);
+      font-family: "Rambla", sans-serif !important; font-size: clamp(32px, 4.6vw, 48px); font-weight: 700; line-height: 1.12; text-transform: uppercase;
       transition: color 150ms ease, transform 150ms ease; }
-    .nav-pill .menu-links a:hover, .nav-pill .menu-links a:focus-visible { color: var(--green); transform: translateX(4px); outline: none; }
-    .pill-foot { display: grid; grid-template-columns: 1fr auto auto; gap: 18px; align-items: center; padding: 10px 20px 12px; border-top: 1px solid rgba(180, 226, 255, 0.16);
-      color: var(--slate); font-family: "Roboto Mono", monospace !important; font-size: 11.5px; }
-    .nav-pill .pill-foot a { margin: 0; padding: 0; color: var(--light-slate); }
-    .nav-pill .pill-foot a:hover { color: var(--green); }
-    .nav-pill .pill-foot .pill-cta { color: #ffb921; }
-    .nav-scrim { position: fixed; inset: 0; z-index: 90; background: rgba(0, 18, 40, 0.55); opacity: 0; visibility: hidden; transition: opacity 260ms ease, visibility 260ms; }
-    body.menu-open .nav-scrim { opacity: 1; visibility: visible; }
-    body.menu-open main, body.menu-open .social-rail, body.menu-open .email-rail { filter: none; }
-    /* Back to Top moves to the bottom, out of the pill's way. */
-    body .to-top { top: auto; bottom: 22px; }
-    @media (max-width: 560px) {
-      .pill-foot { grid-template-columns: 1fr auto; }
-      .pill-foot > span { display: none; }
+    body .site-nav .menu-links a:hover, body .site-nav .menu-links a:focus-visible { color: #fff; transform: translateX(6px); outline: none; }
+    .menu-side { display: flex; flex-direction: column; gap: 12px; padding-top: 12px; }
+    .menu-side-title { margin: 0 0 2px; font-family: "Rambla", sans-serif !important; font-size: 18px; font-weight: 700; text-transform: uppercase; color: var(--r-light); }
+    body .site-nav .menu-contact { display: block; margin: 0; padding: 0; color: #fff; font-family: "Rubik", sans-serif !important; font-size: 16px; text-align: left; }
+    body .site-nav .menu-contact:hover { color: var(--r-light); }
+    .menu-buttons { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+    body .site-nav .menu-btn { display: inline-flex; margin: 0; padding: 10px 16px; border: 1px solid #fff; border-radius: 4px; color: #fff;
+      font-family: "Rubik", sans-serif !important; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: .02em; transition: background 150ms ease, color 150ms ease; }
+    body .site-nav .menu-btn.primary { background: var(--r-yellow); border-color: var(--r-yellow); color: #151515; }
+    body .site-nav .menu-btn:not(.primary):hover { background: #fff; color: var(--r-navy); }
+
+    /* Banner: the video under the bar, with the introduction on it */
+    .hero-media { top: 72px; height: calc(100vh - 72px); }
+    .hero-media::after { background: linear-gradient(90deg, rgba(2, 44, 88, 0.88) 0%, rgba(2, 44, 88, 0.70) 50%, rgba(2, 44, 88, 0.45) 100%); }
+    .hero-pause { top: calc(max(100vh, 560px) - 64px); }
+    .profile { --lightest-slate: #ffffff; --light-slate: #e3eefa; --slate: #c2d5ea; --green: var(--r-light); }
+    .profile h1, .profile .location { font-family: "Rambla", sans-serif !important; letter-spacing: 0; }
+    .profile h1 { text-transform: uppercase; }
+    .profile .bio, .profile .role-line { font-family: "Rubik", sans-serif !important; }
+
+    /* White content area */
+    main.page { --lightest-slate: var(--r-ink); --light-slate: #222; --slate: #4a4a4a; --green: var(--r-blue); --lightest-navy: #cfd5d2; --light-navy: #f4f4f4; }
+    main.page .section { max-width: 1040px; margin-left: auto; margin-right: auto; color: var(--r-ink); font-family: "Rubik", sans-serif !important; }
+    main.page #experience { padding-top: 96px; }
+    main.page .section-title { display: block; margin: 0 0 26px; color: var(--r-ink); font-family: "Rambla", sans-serif !important; font-size: clamp(40px, 6vw, 64px);
+      font-weight: 700; line-height: 1.05; text-transform: uppercase; letter-spacing: 0; }
+    main.page .section-title::before, main.page .section-title::after { display: none; content: none; }
+
+    /* Accordion rows */
+    .acc-list { border-bottom: 1px solid var(--r-rule); }
+    .acc { border-top: 1px solid var(--r-rule); }
+    .acc summary { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; padding: 16px 48px 16px 16px; position: relative; cursor: pointer; list-style: none; }
+    .acc summary::-webkit-details-marker { display: none; }
+    .acc summary::after { content: "+"; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--r-blue); font: 400 28px/1 "Rubik", sans-serif; }
+    .acc[open] summary::after { content: "\2212"; }
+    .acc summary:hover .acc-title, .acc summary:focus-visible .acc-title { color: var(--r-navy); text-decoration: underline; text-underline-offset: 4px; }
+    .acc summary:focus-visible { outline: 2px solid var(--r-blue); outline-offset: -2px; }
+    .acc-title { color: var(--r-blue); font-family: "Rubik", sans-serif !important; font-size: 20px; font-weight: 600; text-transform: uppercase; }
+    .acc-sub { color: #4a4a4a; font-family: "Rubik", sans-serif !important; font-size: 15px; }
+    .acc-body { padding: 0 16px 20px; color: var(--r-ink); font-family: "Rubik", sans-serif !important; font-size: 18px; line-height: 1.8; }
+    .acc-body .acc-org { margin: 0; font-weight: 500; }
+    .acc-body .acc-org a, .acc-body a { color: var(--r-blue); text-decoration: underline; text-underline-offset: 3px; }
+    .acc-body .job-period { margin: 2px 0 0; color: #4a4a4a; font-family: "Rubik", sans-serif !important; font-size: 15px; }
+    .acc-body .job-details { margin: 10px 0 0; padding-left: 20px; }
+    .acc-body .job-details li { padding-left: 0; }
+    .acc-body .job-details li::before { display: none; }
+    .acc-body .cert-note { margin: 10px 0 0; color: var(--r-ink); }
+
+    /* Read */
+    main.page .post-card { padding: 22px 24px 18px; border: 1px solid #d5d9dc; border-radius: 0; background: #fff; }
+    main.page #read { padding-bottom: 40px; }
+    main.page .post-card:hover { border-color: var(--r-blue); }
+    main.page .post-card__title { color: var(--r-ink); font-family: "Rambla", sans-serif !important; font-size: 28px; }
+    main.page .post-card__subtitle, main.page .post-card__meta, main.page .post-card__byline { font-family: "Rubik", sans-serif !important; }
+    main.page .view-all { color: var(--r-blue); border-color: var(--r-blue); }
+
+    /* Footer: navy boxes */
+    .site-footer { position: relative; z-index: 1; margin-top: 40px; padding: 24px 24px 18px; background: var(--r-navy); color: #fff; font-family: "Rubik", sans-serif !important; }
+    .foot-grid { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .foot-cta { grid-column: 2 / 5; display: flex; align-items: center; padding: 18px 22px; border: 1px solid rgba(255, 255, 255, 0.7); }
+    .foot-cta h2 { margin: 0; color: #fff; font-family: "Rambla", sans-serif !important; font-size: clamp(34px, 5vw, 60px); font-weight: 700; line-height: 1; text-transform: uppercase; }
+    .foot-logo { grid-column: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; min-height: 230px; padding: 20px;
+      background: var(--r-blue); border: 1px solid rgba(255, 255, 255, 0.7); color: #fff; text-align: center; font-family: "Rambla", sans-serif !important; font-size: 24px; font-weight: 700; }
+    .foot-mark { display: grid; place-items: center; width: 74px; height: 84px; background: #fff; color: var(--r-blue); font: 700 22px "Roboto Mono", monospace;
+      clip-path: polygon(50% 0, 94% 24%, 94% 76%, 50% 100%, 6% 76%, 6% 24%); }
+    .foot-box { display: flex; flex-direction: column; gap: 6px; padding: 20px 22px; border: 1px solid rgba(255, 255, 255, 0.7); font-size: 15px; }
+    .foot-box h3 { margin: 0 0 8px; color: var(--r-light); font-family: "Rambla", sans-serif !important; font-size: 18px; font-weight: 700; text-transform: uppercase; }
+    .foot-box a { color: #fff; }
+    .foot-box a:hover { color: var(--r-light); text-decoration: underline; }
+    .foot-box span { color: #e3eefa; }
+    .foot-base { max-width: 1240px; margin: 18px auto 0; color: #c2d5ea; font-size: 13px; }
+
+    /* Article reader on white */
+    .post-reader { --lightest-slate: var(--r-ink); --light-slate: #222; --slate: #4a4a4a; --green: var(--r-blue); --lightest-navy: #cfd5d2; background: #fffffe; color: var(--r-ink); }
+    .post-reader__bar { background: var(--r-navy); }
+    .post-reader__bar, .post-reader__bar a, .post-reader__brand { color: #fff; }
+    .post__title { font-family: "Rambla", sans-serif !important; text-transform: uppercase; color: var(--r-ink); }
+    .post__body p, .post__subtitle, .post__author { color: var(--r-ink); }
+    .post-reader .post__body p, .post-reader .post__body p *, .post-reader .post__subtitle { font-family: "Rubik", sans-serif !important; } /* article text and subtitle share one font */
+
+    /* Back to Top: a navy pill at the bottom */
+    body .to-top { top: auto; bottom: 22px; background: var(--r-navy); color: #fff; border-color: var(--r-navy); }
+    body .to-top:hover, body .to-top:focus-visible { background: var(--r-blue); }
+
+    @media (max-width: 820px) {
+      body .site-header { padding: 0 18px; min-height: 64px; }
+      .site-header .bar-name { font-size: 18px; }
+      .hero-media { top: 64px; height: calc(100vh - 64px); }
+      body .site-nav { padding: 0 20px 32px; }
+      .menu-top { min-height: 64px; }
+      .menu-body { grid-template-columns: 1fr; gap: 30px; }
+      .foot-grid { grid-template-columns: 1fr 1fr; }
+      .foot-cta { grid-column: 1 / 3; }
+      .foot-logo { grid-column: 1 / 3; min-height: 160px; }
     }
-    @media (prefers-reduced-motion: reduce) { .nav-pill, .nav-pill .site-nav, .nav-pill .menu-toggle span, .nav-scrim { transition: none; } }
+    @media (max-width: 520px) {
+      .site-header .bar-name { display: none; }
+      .foot-grid { grid-template-columns: 1fr; }
+      .foot-cta, .foot-logo { grid-column: 1; }
+      .acc-title { font-size: 17px; }
+    }
+    @media (prefers-reduced-motion: reduce) { body .site-nav, .menu-close, body .site-nav .menu-links a { transition: none; } }
     .cert-note { margin: 10px 0 0; color: var(--slate); }
     /* Primary buttons in Ritholtz yellow */
     .quick-links a.primary-cta { background: #ffb921 !important; border-color: #ffb921 !important; color: #151515 !important; }
@@ -2882,33 +2980,39 @@
   <div class="header-hotzone" aria-hidden="true"></div>
   <button class="to-top" type="button" aria-label="Back to top"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 13V3M3.5 7.5 8 3l4.5 4.5"/></svg>Back to Top</button>
   <header class="site-header">
-    <div class="nav-pill">
-      <div class="pill-bar">
-        <a class="brand" href="#main" aria-label="Yelsh Gebreselassie home">YG</a>
-        <a class="pill-name" href="#main" tabindex="-1">Yelsh Gebreselassie</a>
-        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu"><span></span><span></span></button>
-      </div>
-      <div class="site-nav" id="site-nav">
-        <div class="pill-inner">
-        <div class="pill-body">
-          <nav class="menu-links" aria-label="Main navigation">
-            <a href="#main">About</a>
-            <a href="#experience">Experience</a>
-            <a href="#education">Education</a>
-            <a href="#certifications">Certifications</a>
-            <a href="#read">Read</a>
-          </nav>
-        </div>
-        <div class="pill-foot">
-          <span>Portfolio Administrator</span>
-          <a href="https://t.me/RefinedConfusion" target="_blank" rel="noopener noreferrer">Telegram</a>
-          <a class="pill-cta" href="mailto:yelshaday@yelshg.com">Email me <span aria-hidden="true">&#8599;</span></a>
-        </div>
+    <a class="brand" href="#main" aria-label="Yelsh Gebreselassie home">YG</a>
+    <a class="bar-name" href="#main" tabindex="-1">Yelsh Gebreselassie</a>
+    <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+      <span class="menu-word">Menu</span>
+      <span class="menu-dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>
+    </button>
+  </header>
+
+  <div class="site-nav" id="site-nav" role="dialog" aria-modal="true" aria-label="Site menu">
+    <div class="menu-top">
+      <a class="brand" href="#main" aria-label="Yelsh Gebreselassie home">YG</a>
+      <button class="menu-close" type="button" aria-label="Close menu"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+    </div>
+    <div class="menu-body">
+      <nav class="menu-links" aria-label="Main navigation">
+        <a href="#main">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#education">Education</a>
+        <a href="#certifications">Certifications</a>
+        <a href="#read">Read</a>
+      </nav>
+      <div class="menu-side">
+        <p class="menu-side-title">Contact</p>
+        <a class="menu-contact" href="mailto:yelshaday@yelshg.com">yelshaday@yelshg.com</a>
+        <a class="menu-contact" href="https://t.me/RefinedConfusion" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a class="menu-contact" href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+        <div class="menu-buttons">
+          <a class="menu-btn primary" href="mailto:yelshaday@yelshg.com">Email me</a>
+          <a class="menu-btn" href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
         </div>
       </div>
     </div>
-  </header>
-  <div class="nav-scrim" aria-hidden="true"></div>
+  </div>
 
   <aside class="social-rail" aria-label="Social links">
     <a href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
@@ -2957,99 +3061,93 @@
 
     <section class="section" id="experience" aria-labelledby="experience-title">
       <h2 class="section-title" id="experience-title">Where I've Worked</h2>
-      <div class="jobs-layout">
-        <div class="job-tabs" role="tablist" aria-label="Work experience">
-          <button class="job-tab is-active" id="tab-penobscot" type="button" role="tab" aria-selected="true" aria-controls="panel-penobscot" tabindex="0">Penobscot</button>
-          <button class="job-tab" id="tab-cross" type="button" role="tab" aria-selected="false" aria-controls="panel-cross" tabindex="-1">Cross</button>
-          <button class="job-tab" id="tab-machias" type="button" role="tab" aria-selected="false" aria-controls="panel-machias" tabindex="-1">Machias</button>
-          <button class="job-tab" id="tab-umaine" type="button" role="tab" aria-selected="false" aria-controls="panel-umaine" tabindex="-1">UMaine</button>
-          <button class="job-tab" id="tab-rd" type="button" role="tab" aria-selected="false" aria-controls="panel-rd" tabindex="-1">R&amp;D Group</button>
-          <button class="job-tab" id="tab-eea" type="button" role="tab" aria-selected="false" aria-controls="panel-eea" tabindex="-1">EEA</button>
-          <span class="job-highlight" aria-hidden="true"></span>
-        </div>
-
-        <div class="job-panels">
-          <article class="job-panel is-active" id="panel-penobscot" role="tabpanel" aria-labelledby="tab-penobscot">
-            <h3>Portfolio Administrator <span>@ <a class="org-link" href="https://penobscotfa.com/" target="_blank" rel="noopener noreferrer">Penobscot Financial Advisors</a></span></h3>
+      <div class="acc-list">
+        <details class="acc" open>
+          <summary><span class="acc-title">Portfolio Administrator</span><span class="acc-sub">Penobscot Financial Advisors</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://penobscotfa.com/" target="_blank" rel="noopener noreferrer">Penobscot Financial Advisors</a></p>
             <p class="job-period">December 2024 — Present</p>
             <ul class="job-details">
               <li>Learning to become a thoughtful steward of investment portfolios.</li>
             </ul>
-          </article>
-
-          <article class="job-panel" id="panel-cross" role="tabpanel" aria-labelledby="tab-cross" hidden>
-            <h3>Revenue Specialist <span>@ <a class="org-link" href="https://www.crossagency.com/" target="_blank" rel="noopener noreferrer">Cross Insurance</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">Revenue Specialist</span><span class="acc-sub">Cross Insurance</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://www.crossagency.com/" target="_blank" rel="noopener noreferrer">Cross Insurance</a></p>
             <p class="job-period">January 2024 — December 2024</p>
-          </article>
-
-          <article class="job-panel" id="panel-machias" role="tabpanel" aria-labelledby="tab-machias" hidden>
-            <h3>FSS / FPQP <span>@ <a class="org-link" href="https://www.machiassavings.com/" target="_blank" rel="noopener noreferrer">Machias Savings Bank</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">FSS / FPQP</span><span class="acc-sub">Machias Savings Bank</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://www.machiassavings.com/" target="_blank" rel="noopener noreferrer">Machias Savings Bank</a></p>
             <p class="job-period">August 2021 — May 2022</p>
-          </article>
-
-          <article class="job-panel" id="panel-umaine" role="tabpanel" aria-labelledby="tab-umaine" hidden>
-            <h3>Graduate Research Assistant <span>@ <a class="org-link" href="https://umaine.edu/" target="_blank" rel="noopener noreferrer">University of Maine</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">Graduate Research Assistant</span><span class="acc-sub">University of Maine</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://umaine.edu/" target="_blank" rel="noopener noreferrer">University of Maine</a></p>
             <p class="job-period">September 2019 — May 2021</p>
-          </article>
-
-          <article class="job-panel" id="panel-rd" role="tabpanel" aria-labelledby="tab-rd" hidden>
-            <h3>Marketing Analyst <span>@ <a class="org-link" href="https://www.randd-group.com/" target="_blank" rel="noopener noreferrer">R&amp;D Group</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">Marketing Analyst</span><span class="acc-sub">R&amp;D Group</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://www.randd-group.com/" target="_blank" rel="noopener noreferrer">R&amp;D Group</a></p>
             <p class="job-period">September 2018 — June 2019</p>
-          </article>
-
-          <article class="job-panel" id="panel-eea" role="tabpanel" aria-labelledby="tab-eea" hidden>
-            <h3>Research Assistant <span>@ <a class="org-link" href="https://eea-et.org/" target="_blank" rel="noopener noreferrer">Ethiopian Economics Association</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">Research Assistant</span><span class="acc-sub">Ethiopian Economics Association</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://eea-et.org/" target="_blank" rel="noopener noreferrer">Ethiopian Economics Association</a></p>
             <p class="job-period">June 2015 — August 2015</p>
             <ul class="job-details"><li>Internship</li></ul>
-          </article>
-        </div>
+          </div>
+        </details>
       </div>
     </section>
 
     <section class="section" id="education" aria-labelledby="education-title">
       <h2 class="section-title" id="education-title">Education</h2>
-      <div class="jobs-layout">
-        <div class="job-tabs" role="tablist" aria-label="Education">
-          <button class="job-tab is-active" id="tab-edu-umaine" type="button" role="tab" aria-selected="true" aria-controls="panel-edu-umaine" tabindex="0">UMaine</button>
-          <button class="job-tab" id="tab-edu-bsl" type="button" role="tab" aria-selected="false" aria-controls="panel-edu-bsl" tabindex="-1">BSL</button>
-          <button class="job-tab" id="tab-edu-unity" type="button" role="tab" aria-selected="false" aria-controls="panel-edu-unity" tabindex="-1">Unity</button>
-          <span class="job-highlight" aria-hidden="true"></span>
-        </div>
-
-        <div class="job-panels">
-          <article class="job-panel is-active" id="panel-edu-umaine" role="tabpanel" aria-labelledby="tab-edu-umaine">
-            <h3>Master, Quantitative Economics <span>@ <a class="org-link" href="https://umaine.edu/" target="_blank" rel="noopener noreferrer">University of Maine</a></span></h3>
+      <div class="acc-list">
+        <details class="acc" open>
+          <summary><span class="acc-title">Master, Quantitative Economics</span><span class="acc-sub">University of Maine</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://umaine.edu/" target="_blank" rel="noopener noreferrer">University of Maine</a></p>
             <p class="job-period">September 2019 — May 2021</p>
-          </article>
-
-          <article class="job-panel" id="panel-edu-bsl" role="tabpanel" aria-labelledby="tab-edu-bsl" hidden>
-            <h3>Master, International Business <span>@ <a class="org-link" href="https://www.bsl-lausanne.ch/" target="_blank" rel="noopener noreferrer">Business School Lausanne</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">Master, International Business</span><span class="acc-sub">Business School Lausanne</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://www.bsl-lausanne.ch/" target="_blank" rel="noopener noreferrer">Business School Lausanne</a></p>
             <p class="job-period">September 2017 — June 2019</p>
-          </article>
-
-          <article class="job-panel" id="panel-edu-unity" role="tabpanel" aria-labelledby="tab-edu-unity" hidden>
-            <h3>Bachelor, Economics <span>@ <a class="org-link" href="https://uu.edu.et/" target="_blank" rel="noopener noreferrer">Unity University</a></span></h3>
+          </div>
+        </details>
+        <details class="acc">
+          <summary><span class="acc-title">Bachelor, Economics</span><span class="acc-sub">Unity University</span></summary>
+          <div class="acc-body">
+            <p class="acc-org"><a class="org-link" href="https://uu.edu.et/" target="_blank" rel="noopener noreferrer">Unity University</a></p>
             <p class="job-period">February 2014 — July 2017</p>
-          </article>
-        </div>
+          </div>
+        </details>
       </div>
     </section>
 
     <section class="section" id="certifications" aria-labelledby="certifications-title">
       <h2 class="section-title" id="certifications-title">Certifications</h2>
-      <div class="jobs-layout">
-        <div class="job-tabs" role="tablist" aria-label="Certifications">
-          <button class="job-tab is-active" id="tab-cert-s65" type="button" role="tab" aria-selected="true" aria-controls="panel-cert-s65" tabindex="0">Series 65</button>
-          <span class="job-highlight" aria-hidden="true"></span>
-        </div>
-
-        <div class="job-panels">
-          <article class="job-panel is-active" id="panel-cert-s65" role="tabpanel" aria-labelledby="tab-cert-s65">
-            <h3>Series 65</h3>
+      <div class="acc-list">
+        <details class="acc" open>
+          <summary><span class="acc-title">Series 65</span><span class="acc-sub"></span></summary>
+          <div class="acc-body">
             <p class="job-period">Passed July 2025 · Credential ID 8077542</p>
             <p class="cert-note">Uniform Investment Adviser Law Examination, developed by NASAA and administered by FINRA. <a class="org-link" href="https://adviserinfo.sec.gov/individual/summary/8077542" target="_blank" rel="noopener noreferrer">View my public regulatory record</a></p>
-          </article>
-        </div>
+          </div>
+        </details>
       </div>
     </section>
 
@@ -3071,11 +3169,34 @@
       </div>
     </section>
 
-    <footer class="footer">
-      <span>© 2026 Yelsh Gebreselassie</span>
-      <a href="#main">Back to top ↑</a>
-    </footer>
   </main>
+
+  <footer class="site-footer">
+    <div class="foot-grid">
+      <div class="foot-cta"><h2>Let&rsquo;s connect</h2></div>
+      <a class="foot-logo" href="#main" aria-label="Back to top"><span class="foot-mark">YG</span><span>Yelsh Gebreselassie</span></a>
+      <div class="foot-box">
+        <h3>Contact</h3>
+        <a href="mailto:yelshaday@yelshg.com">yelshaday@yelshg.com</a>
+        <a href="https://t.me/RefinedConfusion" target="_blank" rel="noopener noreferrer">Telegram</a>
+        <a href="https://www.linkedin.com/in/yelshaday/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+      </div>
+      <nav class="foot-box" aria-label="Footer">
+        <h3>Navigation</h3>
+        <a href="#main">About</a>
+        <a href="#experience">Experience</a>
+        <a href="#education">Education</a>
+        <a href="#certifications">Certifications</a>
+        <a href="#read">Read</a>
+      </nav>
+      <div class="foot-box">
+        <h3>Credentials</h3>
+        <span>Series 65 &middot; Passed July 2025</span>
+        <a href="https://adviserinfo.sec.gov/individual/summary/8077542" target="_blank" rel="noopener noreferrer">Public regulatory record</a>
+      </div>
+    </div>
+    <p class="foot-base">&copy; 2026 Yelsh Gebreselassie</p>
+  </footer>
 
   <div class="post-reader" id="post-wendy" role="dialog" aria-modal="true" aria-labelledby="post-wendy-title" hidden>
     <div class="post-reader__bar">
@@ -3231,6 +3352,7 @@
       };
       menuToggle?.addEventListener('click', () => { setMenu(!document.body.classList.contains('menu-open')); if (document.body.classList.contains('menu-open')) setTimeout(() => { siteNav?.querySelector('.menu-links a')?.focus({ preventScroll: true }); const inner = siteNav?.querySelector('.pill-inner'); if (inner) inner.scrollTop = 0; }, 80); });
       document.querySelector('.nav-scrim')?.addEventListener('click', () => setMenu(false));
+      siteNav?.querySelector('.menu-close')?.addEventListener('click', () => { setMenu(false); menuToggle?.focus(); });
 
       siteNav?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => setMenu(false)));
       document.addEventListener('keydown', (event) => {
@@ -3510,6 +3632,22 @@
       loadStats();
 
 
+
+      /* ---------- Banner height: always covers the whole introduction (it runs taller on phones) ---------- */
+      (() => {
+        const media = document.querySelector('.hero-media'), intro = document.querySelector('.profile'), pause = document.querySelector('.hero-pause');
+        if (!media || !intro) return;
+        const size = () => {
+          const top = media.offsetTop, bottom = intro.getBoundingClientRect().bottom + window.scrollY;
+          const h = Math.max(bottom - top + 32, window.innerHeight - top);
+          media.style.height = h + 'px';
+          if (pause) pause.style.top = (top + h - 64) + 'px';
+        };
+        size();
+        window.addEventListener('resize', size);
+        window.addEventListener('load', size);
+        if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
+      })();
 
       /* ---------- Background video: loads after the page, skipped for reduced motion or data saver ---------- */
       (() => {
