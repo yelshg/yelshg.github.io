@@ -3021,14 +3021,7 @@
 
   <a class="email-rail" href="mailto:yelshaday@yelshg.com">yelshaday@yelshg.com</a>
 
-  <!-- Background video: "Plexes, Geometry, Mathematics" by olenchic, Pixabay (Pixabay Content License). -->
-  <div class="hero-media" aria-hidden="true">
-    <video muted loop playsinline preload="none" data-src="media/hero-math.mp4"></video>
-  </div>
-  <button class="hero-pause" type="button" aria-pressed="false" aria-label="Pause background video" hidden>
-    <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3v10M11 3v10"/></svg>
-    <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3l8 5-8 5z"/></svg>
-  </button>
+  <div class="hero-media" aria-hidden="true"></div>
 
   <main class="page" id="main">
     <section class="profile" aria-labelledby="profile-name">
@@ -3649,26 +3642,6 @@
         if (document.fonts && document.fonts.ready) document.fonts.ready.then(size);
       })();
 
-      /* ---------- Background video: loads after the page, skipped for reduced motion or data saver ---------- */
-      (() => {
-        const media = document.querySelector('.hero-media'), video = media?.querySelector('video'), btn = document.querySelector('.hero-pause');
-        if (!video) return;
-        const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches || (navigator.connection && navigator.connection.saveData);
-        if (still) return;
-        const sync = () => {
-          const paused = video.paused;
-          btn.setAttribute('aria-pressed', String(paused));
-          btn.setAttribute('aria-label', paused ? 'Play background video' : 'Pause background video');
-        };
-        const start = () => {
-          video.src = video.dataset.src;
-          video.play().catch(() => {}); // a browser may hold this until the tab is visible; 'playing' below shows the video when it starts
-        };
-        video.addEventListener('playing', () => { media.classList.add('is-playing'); btn.hidden = false; sync(); });
-        btn.addEventListener('click', () => { if (video.paused) video.play(); else video.pause(); sync(); });
-        video.addEventListener('play', sync); video.addEventListener('pause', sync);
-        if (document.readyState === 'complete') start(); else window.addEventListener('load', start, { once: true });
-      })();
 
       /* ---------- Back to top ---------- */
       (() => {
